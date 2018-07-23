@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * 保存数据与本地
+ * 本地文件管理
  *
  * Created by Wings on 2018/7/21.
  */
@@ -16,14 +16,16 @@ public class FileUtils {
     public static final String TAG = "FileUtils";
 
     public static final String BASE_PATH = "sdcard/";
-    public static final String OUTPUT_PATH = "output";
-    public static final String BASE_OUTPUT_PATH = "sdcard/output/";
+    public static final String OUTPUT_PATH = "ff-output";
+    public static final String INPUT_PATH = "ff-input";
+    public static final String BASE_INPUT_PATH = "sdcard/ff-input/";
+    public static final String BASE_OUTPUT_PATH = "sdcard/ff-output/";
 
-    public static void creatOutputFile(){
-        if(isFileExit(BASE_PATH,OUTPUT_PATH)){
+    public static void creatFile(String path,String fileName){
+        if(isFileExit(path,fileName)){
             return;
         }else {
-            createFile(BASE_PATH,OUTPUT_PATH);
+            createFile(path,fileName);
         }
     }
 
@@ -52,6 +54,20 @@ public class FileUtils {
             Log.i(TAG,"创建了文件夹");
         }
 
+    }
+
+    /**
+     * 获取路径下的所有文件
+     * @param path
+     * @return
+     */
+    public File[] getFiles(String path){
+        File file=new File(path);
+        if(!file.exists()){
+            return null;
+        }
+        File[] files=file.listFiles();
+        return files;
     }
 
     public static boolean isFileExit(String path,String fileName){
