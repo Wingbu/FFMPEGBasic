@@ -21,9 +21,15 @@ public class FileIndexAdapter extends RecyclerView.Adapter<FileIndexAdapter.File
     private ArrayList<File> fileArrayList;
     private Context mContext;
 
+    private OnFileClickListener onFileClickListener;
+
     public FileIndexAdapter(Context context,ArrayList<File> list) {
         this.fileArrayList = list;
         this.mContext = context;
+    }
+
+    public void setOnFileClickListener(OnFileClickListener onFileClickListener) {
+        this.onFileClickListener = onFileClickListener;
     }
 
     @Override
@@ -34,8 +40,14 @@ public class FileIndexAdapter extends RecyclerView.Adapter<FileIndexAdapter.File
 
     @Override
     public void onBindViewHolder(FileIndexViewHolder holder, int position) {
-        File file = fileArrayList.get(position);
+        final File file = fileArrayList.get(position);
         holder.tvFileName.setText(file.getName());
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onFileClickListener.onFileClick(file);
+            }
+        });
     }
 
     @Override
@@ -54,5 +66,9 @@ public class FileIndexAdapter extends RecyclerView.Adapter<FileIndexAdapter.File
             super(itemView);
             tvFileName = itemView.findViewById(R.id.tv_file_name);
         }
+    }
+
+    public interface OnFileClickListener{
+        void onFileClick(File file);
     }
 }
