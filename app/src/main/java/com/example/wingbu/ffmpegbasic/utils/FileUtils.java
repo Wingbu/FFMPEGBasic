@@ -15,12 +15,6 @@ public class FileUtils {
 
     public static final String TAG = "FileUtils";
 
-    public static final String BASE_PATH = "sdcard/";
-    public static final String OUTPUT_PATH = "ff-output";
-    public static final String INPUT_PATH = "ff-input";
-    public static final String BASE_INPUT_PATH = "sdcard/ff-input/";
-    public static final String BASE_OUTPUT_PATH = "sdcard/ff-output/";
-
     /**
      * 创建文件或文件夹
      *
@@ -54,11 +48,11 @@ public class FileUtils {
      * @return
      */
     public static File[] getFiles(String path){
-        File file=new File(path);
+        File file = new File(path);
         if(!file.exists()){
             return null;
         }
-        File[] files=file.listFiles();
+        File[] files = file.listFiles();
         return files;
     }
 
@@ -76,20 +70,20 @@ public class FileUtils {
         return false;
     }
 
-    /**
-     * 根据文件名判断是文件还是文件夹，文件返回true，文件夹返回false
-     * @param fileName
-     * @return
-     */
-    public static boolean isFileName(String fileName){
-        if(null == fileName || fileName.length() == 0){
-            return false;
-        }
-        if(fileName.indexOf(".") != -1){
-            return true;
-        }
-        return false;
-    }
+//    /**
+//     * 根据文件名判断是文件还是文件夹，文件返回true，文件夹返回false
+//     * @param fileName
+//     * @return
+//     */
+//    public static boolean isFileName(String fileName){
+//        if(null == fileName || fileName.length() == 0){
+//            return false;
+//        }
+//        if(fileName.indexOf(".") != -1){
+//            return true;
+//        }
+//        return false;
+//    }
 
     /**
      * 删除文件 如果是文件夹则循环删除
@@ -97,6 +91,9 @@ public class FileUtils {
      * @param fileName
      */
     public static void deleteFile(String path,String fileName){
+        if(!path.endsWith("/")){
+            path = path + "/";
+        }
         File file = new File(path + fileName);
         if(file.exists()){
             if(fileName.indexOf(".") != -1){
@@ -104,7 +101,7 @@ public class FileUtils {
             }else {
                 File[] files = getFiles(path+fileName);
                 for (File file1 : files){
-                    deleteFile(path+fileName+"/",file1.getName());
+                    deleteFile(path + fileName + "/",file1.getName());
                 }
                 file.delete();
             }

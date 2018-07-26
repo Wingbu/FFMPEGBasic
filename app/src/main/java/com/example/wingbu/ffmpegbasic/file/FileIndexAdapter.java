@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.wingbu.ffmpegbasic.R;
 
@@ -46,6 +47,13 @@ public class FileIndexAdapter extends RecyclerView.Adapter<FileIndexAdapter.File
             @Override
             public void onClick(View view) {
                 onFileClickListener.onFileClick(file);
+            }
+        });
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Toast.makeText(mContext,"onLongClick",Toast.LENGTH_SHORT).show();
+                return false;
             }
         });
     }
