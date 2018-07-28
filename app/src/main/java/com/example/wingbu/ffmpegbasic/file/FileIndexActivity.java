@@ -19,7 +19,7 @@ public class FileIndexActivity extends AppCompatActivity {
 
     public static final String TAG = "FileIndexActivity";
 
-    private String filePath = FilePathUtils.BASE_PATH;
+    private String filePath = FilePathUtils.BASE_INPUT_PATH;
 
     private TextView tvUp;
 
@@ -64,8 +64,18 @@ public class FileIndexActivity extends AppCompatActivity {
                 refreshFileList();
             }
         });
+        adapter.setOnFileLongClickListener(new FileIndexAdapter.OnFileLongClickListener() {
+            @Override
+            public void onFileLongClick(File file) {
+                showDeleteDialog(file);
+            }
+        });
         rvFile.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         rvFile.setAdapter(adapter);
+    }
+
+    private void showDeleteDialog(File file){
+
     }
 
     private ArrayList<File> getFileList(){

@@ -72,12 +72,15 @@ public class FilePathUtils {
         }
         if(filePath.indexOf("/") != filePath.lastIndexOf("/")){
             if(filePath.endsWith("/")){
-                filePath = filePath.substring(0,filePath.length());
+                filePath = filePath.substring(0,filePath.length()-1);
             }
-            int subPosition = filePath.lastIndexOf("/");
-            String result = filePath.substring(0,subPosition);
-            return result;
+        }else {
+            if(filePath.endsWith("/")){
+                return filePath;
+            }
         }
-        return filePath;
+        int subPosition = filePath.lastIndexOf("/");
+        String result = filePath.substring(0,subPosition);
+        return result;
     }
 }

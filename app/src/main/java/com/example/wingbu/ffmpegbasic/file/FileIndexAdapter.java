@@ -23,6 +23,7 @@ public class FileIndexAdapter extends RecyclerView.Adapter<FileIndexAdapter.File
     private Context mContext;
 
     private OnFileClickListener onFileClickListener;
+    private OnFileLongClickListener onFileLongClickListener;
 
     public FileIndexAdapter(Context context,ArrayList<File> list) {
         this.fileArrayList = list;
@@ -31,6 +32,10 @@ public class FileIndexAdapter extends RecyclerView.Adapter<FileIndexAdapter.File
 
     public void setOnFileClickListener(OnFileClickListener onFileClickListener) {
         this.onFileClickListener = onFileClickListener;
+    }
+
+    public void setOnFileLongClickListener(OnFileLongClickListener onFileLongClickListener) {
+        this.onFileLongClickListener = onFileLongClickListener;
     }
 
     @Override
@@ -53,6 +58,7 @@ public class FileIndexAdapter extends RecyclerView.Adapter<FileIndexAdapter.File
             @Override
             public boolean onLongClick(View view) {
                 Toast.makeText(mContext,"onLongClick",Toast.LENGTH_SHORT).show();
+                onFileLongClickListener.onFileLongClick(file);
                 return false;
             }
         });
@@ -78,5 +84,9 @@ public class FileIndexAdapter extends RecyclerView.Adapter<FileIndexAdapter.File
 
     public interface OnFileClickListener{
         void onFileClick(File file);
+    }
+
+    public interface OnFileLongClickListener{
+        void onFileLongClick(File file);
     }
 }
