@@ -21,6 +21,7 @@ public class FileIndexActivity extends AppCompatActivity {
 
     private String filePath = FilePathUtils.BASE_INPUT_PATH;
 
+    private TextView tvIndex;
     private TextView tvUp;
 
     private RecyclerView rvFile;
@@ -31,6 +32,7 @@ public class FileIndexActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_index);
 
+        tvIndex = (TextView) findViewById(R.id.tv_index);
         tvUp = (TextView) findViewById(R.id.tv_up);
         tvUp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,6 +51,7 @@ public class FileIndexActivity extends AppCompatActivity {
         if(FilePathUtils.isFileName(filePath)){
             return;
         }
+        tvIndex.setText(filePath);
         adapter = new FileIndexAdapter(FileIndexActivity.this,getFileList());
         adapter.setOnFileClickListener(new FileIndexAdapter.OnFileClickListener() {
             @Override

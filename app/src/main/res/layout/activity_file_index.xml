@@ -7,9 +7,16 @@
     tools:context="com.example.wingbu.ffmpegbasic.file.FileIndexActivity">
 
     <TextView
+        android:id="@+id/tv_index"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:textSize="22sp"/>
+    <TextView
         android:id="@+id/tv_up"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_index"
         android:text="......"
         android:layout_margin="10dp"
         android:textSize="22sp"/>
