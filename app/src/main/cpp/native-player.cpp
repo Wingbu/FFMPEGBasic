@@ -1,13 +1,12 @@
 #include <jni.h>
 #include <string>
 #include <android/log.h>
+#include <android/native_window.h>
+#include <android/native_window_jni.h>
 
 extern "C" {
-    //编码
     #include "libavcodec/avcodec.h"
-    //封装格式处理
     #include "libavformat/avformat.h"
-    //像素处理
     #include "libswscale/swscale.h"
 }
 
@@ -18,7 +17,7 @@ extern "C"
 JNIEXPORT jint JNICALL
 Java_com_example_wingbu_ffmpegbasic_play_VideoPlayActivity_play(JNIEnv *env, jclass type, jstring input_,
                                                      jobject surface) {
-    const char *videoFile = *env->GetStringUTFChars( input_ , 0 );
+    const char *videoFile = env->GetStringUTFChars(input_, 0);
     FFLOGI("%s",videoFile);
 
     av_register_all();
@@ -44,7 +43,7 @@ Java_com_example_wingbu_ffmpegbasic_play_VideoPlayActivity_play(JNIEnv *env, jcl
     }
 
     if (videoStream == -1) {
-         LOGD("Didn't find a video stream.");
+         FFLOGI("Didn't find a video stream.");
          return -1; // Didn't find a video stream
     }
 
@@ -53,12 +52,12 @@ Java_com_example_wingbu_ffmpegbasic_play_VideoPlayActivity_play(JNIEnv *env, jcl
     AVCodec *pCodec = avcodec_find_decoder(pCodecContext->codec_id);
 
     if(pCodec == NULL){
-       LOGD("codec not found");
+       FFLOGI("codec not found");
        return -1;
     }
 
     if(avcodec_open2(pCodecContext,pCodec,NULL) < 0){
-       LOGD("can not open codec");
+       FFLOGI("can not open codec");
        return -1;
     }
 
@@ -67,12 +66,12 @@ Java_com_example_wingbu_ffmpegbasic_play_VideoPlayActivity_play(JNIEnv *env, jcl
     int videoWidth = pCodecContext -> width;
     int videoHeight = pCodecContext -> height;
 
-    ANativeWindow_setBufferGeometry(nativeWindow,videoWidth,videoHeight,WINDOW_FORMAT_RGBA_8888);
+    ANativeWindow_setBuffersGeometry(nativeWindow,videoWidth,videoHeight,WINDOW_FORMAT_RGBA_8888);
 
     ANativeWindow_Buffer windowBuffer;
 
     if(avcodec_open2(pCodecContext,pCodec,NULL) < 0){
-       LOGD("can not open codec ");
+       FFLOGI("can not open codec ");
        return -1;
     }
 
@@ -80,18 +79,18 @@ Java_com_example_wingbu_ffmpegbasic_play_VideoPlayActivity_play(JNIEnv *env, jcl
 
     AVFrame *pFrameRGBA = av_frame_alloc();
     if(pFrameRGBA == NULL || pFrame ==NULL){
-       LOGD(" can not allocate video frame ");
+       FFLOGI(" can not allocate video frame ");
        return -1;
     }
 
     int numBytes = av_image_get_buffer_size(AV_PIX_FMT_RGBA,pCodecContext->width,pCodecContext->height,1);
-    uint8_t *buffer = (uint8_t)av_malloc(numBytes * sizeof(uint8_t));
+    uint8_t *buffer = (uint8_t *)av_malloc(numBytes * sizeof(uint8_t));
     av_image_fill_arrays(pFrameRGBA->data,pFrameRGBA->linesize,buffer,AV_PIX_FMT_RGBA,
                                           pCodecContext->width,pCodecContext->height,1);
 
     struct SwsContext *sws_ctx = sws_getContext(pCodecContext->width,pCodecContext->height,
                                                 pCodecContext->pix_fmt,
-                                                pCodecContext->width,pCodecContext->height
+                                                pCodecContext->width,pCodecContext->height,
                                                 AV_PIX_FMT_RGBA,SWS_BILINEAR,
                                                 NULL,NULL,NULL);
 
@@ -102,7 +101,7 @@ Java_com_example_wingbu_ffmpegbasic_play_VideoPlayActivity_play(JNIEnv *env, jcl
            avcodec_decode_video2(pCodecContext,pFrame,&frameFinished,&packet);
            if(frameFinished){
               ANativeWindow_lock(nativeWindow,&windowBuffer,0);
-              sws_scale(sws_ctx,(uint8_t const *const *)pFrame->data
+              sws_scale(sws_ctx,(uint8_t const *const *)pFrame->data,
                         pFrame->linesize,0,pCodecContext->height,
                         pFrameRGBA->data,pFrameRGBA->linesize);
 

@@ -2,12 +2,17 @@ package com.example.wingbu.ffmpegbasic.play;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.example.wingbu.ffmpegbasic.R;
 
 public class VideoPlayActivity extends AppCompatActivity implements SurfaceHolder.Callback{
+
+    static {
+        System.loadLibrary("native-player");
+    }
 
     private SurfaceView surfaceView;
 
@@ -19,8 +24,14 @@ public class VideoPlayActivity extends AppCompatActivity implements SurfaceHolde
     }
 
     @Override
-    public void surfaceCreated(SurfaceHolder surfaceHolder) {
-
+    public void surfaceCreated(final SurfaceHolder surfaceHolder) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.i("ffmpeg"," surfaceCreated ");
+                play("sdcard/ff-input/example.avi",surfaceHolder.getSurface());
+            }
+        }).start();
     }
 
     @Override
@@ -32,4 +43,6 @@ public class VideoPlayActivity extends AppCompatActivity implements SurfaceHolde
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
 
     }
+
+    public native int play(String input_,Object surface);
 }
