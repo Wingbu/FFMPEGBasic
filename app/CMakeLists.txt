@@ -48,58 +48,58 @@ find_library( # Sets the name of the path variable.
 # can link multiple libraries, such as libraries you define in this
 # build script, prebuilt third-party libraries, or system libraries.
 
-add_library( avcodec-56
+add_library( avcodec-57
              SHARED
              IMPORTED)
-set_target_properties( avcodec-56
+set_target_properties( avcodec-57
                        PROPERTIES IMPORTED_LOCATION
-                       ${distribution_DIR}/armeabi-v7a/libavcodec-56.so)
+                       ${distribution_DIR}/armeabi-v7a/libavcodec-57.so)
 
-add_library( avfilter-5
+add_library( avfilter-6
              SHARED
              IMPORTED)
-set_target_properties( avfilter-5
+set_target_properties( avfilter-6
                        PROPERTIES IMPORTED_LOCATION
-                       ${distribution_DIR}/armeabi-v7a/libavfilter-5.so)
+                       ${distribution_DIR}/armeabi-v7a/libavfilter-6.so)
 
-add_library( avformat-56
+add_library( avformat-57
              SHARED
              IMPORTED)
-set_target_properties( avformat-56
+set_target_properties( avformat-57
                        PROPERTIES IMPORTED_LOCATION
-                       ${distribution_DIR}/armeabi-v7a/libavformat-56.so)
+                       ${distribution_DIR}/armeabi-v7a/libavformat-57.so)
 
-add_library( avutil-54
+add_library( avutil-55
              SHARED
              IMPORTED)
-set_target_properties( avutil-54
+set_target_properties( avutil-55
                        PROPERTIES IMPORTED_LOCATION
-                       ${distribution_DIR}/armeabi-v7a/libavutil-54.so)
-add_library( swresample-1
+                       ${distribution_DIR}/armeabi-v7a/libavutil-55.so)
+add_library( swresample-2
              SHARED
              IMPORTED)
-set_target_properties( swresample-1
+set_target_properties( swresample-2
                        PROPERTIES IMPORTED_LOCATION
-                       ${distribution_DIR}/armeabi-v7a/libswresample-1.so)
+                       ${distribution_DIR}/armeabi-v7a/libswresample-2.so)
 
-add_library( swscale-3
+add_library( swscale-4
              SHARED
              IMPORTED)
-set_target_properties( swscale-3
+set_target_properties( swscale-4
                        PROPERTIES IMPORTED_LOCATION
-                       ${distribution_DIR}/armeabi-v7a/libswscale-3.so)
+                       ${distribution_DIR}/armeabi-v7a/libswscale-4.so)
 
 include_directories(libs/include)
 
 target_link_libraries( # Specifies the target library.
                        native-lib
                        native-player
-                       avcodec-56
-                       avfilter-5
-                       avformat-56
-                       avutil-54
-                       swresample-1
-                       swscale-3
+                       avcodec-57
+                       avfilter-6
+                       avformat-57
+                       avutil-55
+                       swresample-2
+                       swscale-4
                        # Links the target library to the log library
                        # included in the NDK.
                        ${log-lib} )

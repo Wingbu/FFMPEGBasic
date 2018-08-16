@@ -13,12 +13,6 @@ public class MainActivity extends AppCompatActivity {
     // Used to load the 'native-lib' library on application startup.
     static {
         System.loadLibrary("native-lib");
-        System.loadLibrary("avcodec-56");
-        System.loadLibrary("avfilter-5");
-        System.loadLibrary("avformat-56");
-        System.loadLibrary("avutil-54");
-        System.loadLibrary("swresample-1");
-        System.loadLibrary("swscale-3");
     }
 
     @Override
@@ -30,13 +24,13 @@ public class MainActivity extends AppCompatActivity {
         TextView tv = (TextView) findViewById(R.id.sample_text);
         tv.setText(stringFromJHello());
 
-        String input = new File("sdcard/sintel.mp4").getAbsolutePath();
-        String output = new File("sdcard/carphone_qcif.yuv").getAbsolutePath();
+        String input = new File("sdcard/ff-input/example.mp4").getAbsolutePath();
+        String output = new File("sdcard/ff-input/carphone_qcif.yuv").getAbsolutePath();
         String s = Environment.getExternalStorageDirectory().toString();
         Log.i("Wings", Environment.getExternalStorageDirectory().toString());
-        File file = new File("sdcard/sintel.mp4");
-        boolean is = file.exists();
-        decode(input, output);
+//        File file = new File("sdcard/sintel.mp4");
+//        boolean is = file.exists();
+        decode("sdcard/ff-input/example.mp4", "sdcard/ff-input/carphone_qcif.yuv");
     }
 
     /**
