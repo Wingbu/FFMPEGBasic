@@ -19,16 +19,7 @@ add_library( # Sets the name of the library.
              SHARED
 
              # Provides a relative path to your source file(s).
-             src/main/cpp/native-lib.cpp )
-
-
-add_library( # Sets the name of the library.
-             native-player
-
-             # Sets the library as a shared library.
-             SHARED
-
-             # Provides a relative path to your source file(s).
+             src/main/cpp/native-lib.cpp
              src/main/cpp/native-player.cpp )
 
 # Searches for a specified prebuilt library and stores the path as a
@@ -93,7 +84,6 @@ include_directories(libs/include)
 
 target_link_libraries( # Specifies the target library.
                        native-lib
-                       native-player
                        avcodec-57
                        avfilter-6
                        avformat-57

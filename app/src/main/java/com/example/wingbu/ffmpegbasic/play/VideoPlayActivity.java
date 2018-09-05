@@ -11,16 +11,18 @@ import com.example.wingbu.ffmpegbasic.R;
 public class VideoPlayActivity extends AppCompatActivity implements SurfaceHolder.Callback{
 
     static {
-        System.loadLibrary("native-player");
+        System.loadLibrary("native-lib");
     }
 
-    private SurfaceView surfaceView;
+    SurfaceHolder mSurfaceHolder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_play);
-        surfaceView = (SurfaceView) findViewById(R.id.surface_view);
+        SurfaceView surfaceView = (SurfaceView) findViewById(R.id.surface_view);
+        mSurfaceHolder = surfaceView.getHolder();
+        mSurfaceHolder.addCallback(this);
     }
 
     @Override
