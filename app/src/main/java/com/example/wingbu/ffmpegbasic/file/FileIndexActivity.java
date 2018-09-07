@@ -1,5 +1,6 @@
 package com.example.wingbu.ffmpegbasic.file;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -57,6 +58,7 @@ public class FileIndexActivity extends AppCompatActivity {
             @Override
             public void onFileClick(File file) {
                 if(FilePathUtils.isFileName(file.getName())){
+                    setOnActivityResult(file);
                     return;
                 }
                 filePath = file.getAbsolutePath();
@@ -77,8 +79,17 @@ public class FileIndexActivity extends AppCompatActivity {
         rvFile.setAdapter(adapter);
     }
 
-    private void showDeleteDialog(File file){
+    private void setOnActivityResult(File file){
+        //参数校验(先偷个懒)
 
+        //返回结果
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra(FileResultEntity.RESULT_TAG,file.getAbsolutePath());
+        setResult(FileResultEntity.RESULT_CODE_SUCCESS,resultIntent);
+    }
+
+    private void showDeleteDialog(File file){
+        //参数校验(先偷个懒)
     }
 
     private ArrayList<File> getFileList(){
