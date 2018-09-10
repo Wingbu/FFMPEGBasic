@@ -29,19 +29,19 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/btn_yuv"
+        android:id="@+id/btn_yuv_h264"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20sp"
         android:layout_below="@+id/ll_path"
-        android:text="yuv"/>
+        android:text="yuv->h264"/>
 
     <Button
         android:id="@+id/btn_mp4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="20sp"
-        android:layout_below="@+id/btn_yuv"
+        android:layout_below="@+id/btn_yuv_h264"
         android:text="mp4"/>
 
     <Button
@@ -52,5 +52,12 @@
         android:layout_below="@+id/btn_mp4"
         android:text="h264"/>
 
+    <Button
+        android:id="@+id/btn_flv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:layout_below="@+id/btn_h264"
+        android:text="flv"/>
 
 </RelativeLayout>
