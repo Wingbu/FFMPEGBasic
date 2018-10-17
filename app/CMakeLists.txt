@@ -21,6 +21,7 @@ add_library( # Sets the name of the library.
              # Provides a relative path to your source file(s).
              src/main/cpp/native-lib.cpp
              src/main/cpp/native-player.cpp
+             src/main/cpp/native-mix-player.cpp
              src/main/cpp/native-trans-video.cpp)
 
 # Searches for a specified prebuilt library and stores the path as a
@@ -92,6 +93,7 @@ target_link_libraries( # Specifies the target library.
                        swresample-2
                        swscale-4
                        android
+                       OpenSLES
                        # Links the target library to the log library
                        # included in the NDK.
                        ${log-lib} )
