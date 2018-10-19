@@ -27,9 +27,38 @@ const char *filePath;
 int64_t *totalTime;
 int64_t duration;
 
+FFmpegVideo *ffmpegVideo;
+FFmpegMusic *ffmpegMusic;
+
+ANativeWindow *window = 0;
+
 AVFormatContext *avFormatContext;
 
 
+
+void call_video_play(AVFrame *frame){
+   if(!window){
+     return;
+   }
+
+   ANativeWindow_Buffer window_buffer;
+   if(ANativeWindow_lock( window , &window_buffer , 0)){
+       return;
+   }
+
+   LOGE("绘制 宽%d,高%d", frame->width, frame->height);
+   LOGE("绘制 宽%d,高%d  行字节 %d ", window_buffer.width, window_buffer.height, frame->linesize[0]);
+
+   uint8_t *dst = (uint8_t) window_buffer.bits;
+   int dstStride = window_buffer.stride * 4;
+   uint8_t *src = frame->data[0];
+   int srcStride = frame->linesize[0];
+   for(int i = 0 ; i < window_buffer.height ; ++i){
+       memcpy(dst + i * dstStride, src + i * srcStride,srcStride);
+   }
+
+   ANativeWindow_unlockAndPost(window);
+}
 
 void init(){
 
@@ -57,6 +86,17 @@ void init(){
       duration = avFormatContext->duration;//微秒
    }
 
+}
+
+void seekTo(int msec){
+//    if(msec <= 0){
+//        msec = 0;
+//    }
+//    //清空Vector
+//    ffmpegVideo->queue.clear();
+//    ffmpegMusic->queue.clear();
+//
+//    av_seek_frame(avFormatContext,ffmpegVideo->index,);
 }
 
 extern "C"
