@@ -1,5 +1,7 @@
 #include <jni.h>
 #include <string>
+#include "FFmpegMusic.h"
+#include "FFmpegVideo.h"
 #include <android/log.h>
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
@@ -21,74 +23,116 @@ extern "C" {
 
 #define FFLOGI(FORMAT,...) __android_log_print(ANDROID_LOG_INFO,"ffmpeg",FORMAT,##__VA_ARGS__);
 #define FFLOGE(FORMAT,...) __android_log_print(ANDROID_LOG_ERROR,"ffmpeg",FORMAT,##__VA_ARGS__);
+#define LOGE(FORMAT,...) __android_log_print(ANDROID_LOG_ERROR,"LC XXX",FORMAT,##__VA_ARGS__);
 
-
-const char *filePath;
+const char *inputPath;
 int64_t *totalTime;
-int64_t duration;
-
 FFmpegVideo *ffmpegVideo;
 FFmpegMusic *ffmpegMusic;
-
+pthread_t p_tid;
+int isPlay;
 ANativeWindow *window = 0;
-
-AVFormatContext *avFormatContext;
+int64_t duration;
+AVFormatContext *pFormatCtx;
+AVPacket *packet;
+int step = 0;
+jboolean isSeek = false;
 
 
 
 void call_video_play(AVFrame *frame){
-   if(!window){
-     return;
-   }
+//   if(!window){
+//     return;
+//   }
+//
+//   ANativeWindow_Buffer window_buffer;
+//   if(ANativeWindow_lock( window , &window_buffer , 0)){
+//       return;
+//   }
+//
+//   LOGE("绘制 宽%d,高%d", frame->width, frame->height);
+//   LOGE("绘制 宽%d,高%d  行字节 %d ", window_buffer.width, window_buffer.height, frame->linesize[0]);
+//
+//   uint8_t *dst = (uint8_t) window_buffer.bits;
+//   int dstStride = window_buffer.stride * 4;
+//   uint8_t *src = frame->data[0];
+//   int srcStride = frame->linesize[0];
+//   for(int i = 0 ; i < window_buffer.height ; ++i){
+//       memcpy(dst + i * dstStride, src + i * srcStride,srcStride);
+//   }
+//
+//   ANativeWindow_unlockAndPost(window);
+    if (!window) {
+        return;
+    }
+    ANativeWindow_Buffer window_buffer;
+    if (ANativeWindow_lock(window, &window_buffer, 0)) {
+        return;
+    }
 
-   ANativeWindow_Buffer window_buffer;
-   if(ANativeWindow_lock( window , &window_buffer , 0)){
-       return;
-   }
-
-   LOGE("绘制 宽%d,高%d", frame->width, frame->height);
-   LOGE("绘制 宽%d,高%d  行字节 %d ", window_buffer.width, window_buffer.height, frame->linesize[0]);
-
-   uint8_t *dst = (uint8_t) window_buffer.bits;
-   int dstStride = window_buffer.stride * 4;
-   uint8_t *src = frame->data[0];
-   int srcStride = frame->linesize[0];
-   for(int i = 0 ; i < window_buffer.height ; ++i){
-       memcpy(dst + i * dstStride, src + i * srcStride,srcStride);
-   }
-
-   ANativeWindow_unlockAndPost(window);
+    LOGE("绘制 宽%d,高%d", frame->width, frame->height);
+    LOGE("绘制 宽%d,高%d  行字节 %d ", window_buffer.width, window_buffer.height, frame->linesize[0]);
+    uint8_t *dst = (uint8_t *) window_buffer.bits;
+    int dstStride = window_buffer.stride * 4;
+    uint8_t *src = frame->data[0];
+    int srcStride = frame->linesize[0];
+    for (int i = 0; i < window_buffer.height; ++i) {
+        memcpy(dst + i * dstStride, src + i * srcStride, srcStride);
+    }
+    ANativeWindow_unlockAndPost(window);
 }
 
 void init(){
 
-   // 1. 注册组件
-   av_register_all();
-   avformat_network_init();
+//   // 1. 注册组件
+//   av_register_all();
+//   avformat_network_init();
+//
+//   // 2. 封装格式上下文
+//   avFormatContext = avformat_alloc_context();
+//
+//   // 3.打开视频文件
+//   if(avformat_open_input(&avFormatContext, filePath, NULL, NULL) != 0) {
+//       FFLOGI("Couldn't open file:%s\n", filePath);
+//       return ; // Couldn't open file
+//   }
+//
+//   // 4.获取视频信息
+//   if(avformat_find_stream_info(avFormatContext, NULL) < 0) {
+//       FFLOGI("Couldn't find stream information.");
+//       return ;
+//   }
+//
+//   // 5. 得到播放总时间
+//   if(avFormatContext->duration != AV_NOPTS_VALUE) {
+//      duration = avFormatContext->duration;//微秒
+//   }
 
-   // 2. 封装格式上下文
-   avFormatContext = avformat_alloc_context();
 
-   // 3.打开视频文件
-   if(avformat_open_input(&avFormatContext, filePath, NULL, NULL) != 0) {
-       FFLOGI("Couldn't open file:%s\n", filePath);
-       return ; // Couldn't open file
-   }
+    LOGE("开启解码线程")
+    //1.注册组件
+    av_register_all();
+    avformat_network_init();
+    //封装格式上下文
+    pFormatCtx = avformat_alloc_context();
 
-   // 4.获取视频信息
-   if(avformat_find_stream_info(avFormatContext, NULL) < 0) {
-       FFLOGI("Couldn't find stream information.");
-       return ;
-   }
+    //2.打开输入视频文件
+    if (avformat_open_input(&pFormatCtx, inputPath, NULL, NULL) != 0) {
+        LOGE("%s", "打开输入视频文件失败");
+    }
+    //3.获取视频信息
+    if (avformat_find_stream_info(pFormatCtx, NULL) < 0) {
+        LOGE("%s", "获取视频信息失败");
+    }
 
-   // 5. 得到播放总时间
-   if(avFormatContext->duration != AV_NOPTS_VALUE) {
-      duration = avFormatContext->duration;//微秒
-   }
+    //得到播放总时间
+    if (pFormatCtx->duration != AV_NOPTS_VALUE) {
+        duration = pFormatCtx->duration;//微秒
+    }
 
 }
 
-void seekTo(int msec){
+void seekTo(int mesc){
 //    if(msec <= 0){
 //        msec = 0;
 //    }
@@ -97,143 +141,203 @@ void seekTo(int msec){
 //    ffmpegMusic->queue.clear();
 //
 //    av_seek_frame(avFormatContext,ffmpegVideo->index,);
+
+    if (mesc <= 0) {
+        mesc=0;
+    }
+    //清空vector
+    ffmpegMusic->queue.clear();
+    ffmpegVideo->queue.clear();
+    //跳帧
+   /* if (av_seek_frame(pFormatCtx, -1,  mesc * AV_TIME_BASE, AVSEEK_FLAG_BACKWARD) < 0) {
+        LOGE("failed")
+    } else {
+        LOGE("success")
+    }*/
+
+    av_seek_frame(pFormatCtx, ffmpegVideo->index, (int64_t) (mesc /av_q2d(ffmpegVideo->time_base)), AVSEEK_FLAG_BACKWARD);
+    av_seek_frame(pFormatCtx, ffmpegMusic->index, (int64_t) (mesc /av_q2d(ffmpegMusic->time_base)), AVSEEK_FLAG_BACKWARD);
+}
+
+void *begin(void *args) {
+
+    //找到视频流和音频流
+    for (int i = 0; i < pFormatCtx->nb_streams; ++i) {
+        //获取解码器
+        AVCodecContext *avCodecContext = pFormatCtx->streams[i]->codec;
+        AVCodec *avCodec = avcodec_find_decoder(avCodecContext->codec_id);
+
+        //copy一个解码器，
+        AVCodecContext *codecContext = avcodec_alloc_context3(avCodec);
+        avcodec_copy_context(codecContext, avCodecContext);
+        if (avcodec_open2(codecContext, avCodec, NULL) < 0) {
+            LOGE("打开失败")
+            continue;
+        }
+        //如果是视频流
+        if (pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
+            ffmpegVideo->index = i;
+            ffmpegVideo->setAvCodecContext(codecContext);
+            ffmpegVideo->time_base = pFormatCtx->streams[i]->time_base;
+            if (window) {
+                ANativeWindow_setBuffersGeometry(window, ffmpegVideo->codec->width,
+                                                 ffmpegVideo->codec->height,
+                                                 WINDOW_FORMAT_RGBA_8888);
+            }
+        }//如果是音频流
+        else if (pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
+            ffmpegMusic->index = i;
+            ffmpegMusic->setAvCodecContext(codecContext);
+            ffmpegMusic->time_base = pFormatCtx->streams[i]->time_base;
+        }
+    }
+//开启播放
+    ffmpegVideo->setFFmepegMusic(ffmpegMusic);
+    ffmpegMusic->play();
+    ffmpegVideo->play();
+    isPlay = 1;
+    //seekTo(0);
+    //解码packet,并压入队列中
+    packet = (AVPacket *) av_mallocz(sizeof(AVPacket));
+    //跳转到某一个特定的帧上面播放
+    int ret;
+    while (isPlay) {
+        //
+        ret = av_read_frame(pFormatCtx, packet);
+        if (ret == 0) {
+            if (ffmpegVideo && ffmpegVideo->isPlay && packet->stream_index == ffmpegVideo->index
+               ) {
+                //将视频packet压入队列
+                ffmpegVideo->put(packet);
+            } else if (ffmpegMusic && ffmpegMusic->isPlay &&
+                       packet->stream_index == ffmpegMusic->index) {
+                ffmpegMusic->put(packet);
+            }
+            av_packet_unref(packet);
+        } else if (ret == AVERROR_EOF) {
+            // 读完了
+            //读取完毕 但是不一定播放完毕
+            while (isPlay) {
+                if (ffmpegVideo->queue.empty() && ffmpegMusic->queue.empty()) {
+                    break;
+                }
+                // LOGE("等待播放完成");
+                av_usleep(10000);
+            }
+        }
+    }
+    //解码完过后可能还没有播放完
+    isPlay = 0;
+    if (ffmpegMusic && ffmpegMusic->isPlay) {
+        ffmpegMusic->stop();
+    }
+    if (ffmpegVideo && ffmpegVideo->isPlay) {
+        ffmpegVideo->stop();
+    }
+    //释放
+    av_free_packet(packet);
+    avformat_free_context(pFormatCtx);
+    pthread_exit(0);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_wingbu_ffmpegbasic_play_mix_Play_play(JNIEnv *env, jobject instance, jstring inputPath_) {
+
+    inputPath = env->GetStringUTFChars(inputPath_, 0);
+    init();
+    ffmpegVideo = new FFmpegVideo;
+    ffmpegMusic = new FFmpegMusic;
+    ffmpegVideo->setPlayCall(call_video_play);
+    pthread_create(&p_tid, NULL, begin, NULL);//开启begin线程
+    env->ReleaseStringUTFChars(inputPath_, inputPath);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_wingbu_ffmpegbasic_play_mix_Play_display(JNIEnv *env, jobject instance, jobject surface) {
+
+    //得到界面
+    if (window) {
+        ANativeWindow_release(window);
+        window = 0;
+    }
+    window = ANativeWindow_fromSurface(env, surface);
+    if (ffmpegVideo && ffmpegVideo->codec) {
+        ANativeWindow_setBuffersGeometry(window, ffmpegVideo->codec->width,
+                                         ffmpegVideo->codec->height,
+                                         WINDOW_FORMAT_RGBA_8888);
+    }
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_wingbu_ffmpegbasic_play_mix_Play_release(JNIEnv *env, jobject instance) {
+    //释放资源
+    if (isPlay) {
+        isPlay = 0;
+        pthread_join(p_tid, 0);
+    }
+    if (ffmpegVideo) {
+        if (ffmpegVideo->isPlay) {
+            ffmpegVideo->stop();
+        }
+        delete (ffmpegVideo);
+        ffmpegVideo = 0;
+    }
+    if (ffmpegMusic) {
+        if (ffmpegMusic->isPlay) {
+            ffmpegMusic->stop();
+        }
+        delete (ffmpegMusic);
+        ffmpegMusic = 0;
+    }
+
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_wingbu_ffmpegbasic_play_mix_Play_stop(JNIEnv *env, jobject instance) {
+    //点击暂停按钮
+    ffmpegMusic->pause();
+    ffmpegVideo->pause();
+
 }
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_example_wingbu_ffmpegbasic_play_MixPlayActivity_play(JNIEnv *env, jclass type, jstring input_,jobject surface) {
+Java_com_example_wingbu_ffmpegbasic_play_mix_Play_getTotalTime(JNIEnv *env, jobject instance) {
 
-    filePath = env->GetStringUTFChars(input_, 0);
+//获取视频总时间
+    return (jint) duration;
+}
 
-    FFLOGI("play");
+extern "C"
+JNIEXPORT double JNICALL
+Java_com_example_wingbu_ffmpegbasic_play_mix_Play_getCurrentPosition(JNIEnv *env, jobject instance) {
 
-    init();
+//获取音频播放时间
+    return ffmpegMusic->clock;
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_wingbu_ffmpegbasic_play_mix_Play_seekTo(JNIEnv *env, jobject instance, jint msec) {
+
+seekTo(msec/1000);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_wingbu_ffmpegbasic_play_mix_Play_stepBack(JNIEnv *env, jobject instance) {
 
 
-        // Find the first video stream
-        int videoStream = -1, i;
-        for (i = 0; i < pFormatCtx->nb_streams; i++) {
-            if (pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO
-                && videoStream < 0) {
-                videoStream = i;
-            }
-        }
-        if (videoStream == -1) {
-            FFLOGI("Didn't find a video stream.");
-            return -1; // Didn't find a video stream
-        }
+}
 
-        // Get a pointer to the codec context for the video stream
-        AVCodecContext *pCodecCtx = pFormatCtx->streams[videoStream]->codec;
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_example_wingbu_ffmpegbasic_play_mix_Play_stepUp(JNIEnv *env, jobject instance) {
 
-        // Find the decoder for the video stream
-        AVCodec *pCodec = avcodec_find_decoder(pCodecCtx->codec_id);
-        if (pCodec == NULL) {
-            FFLOGI("Codec not found.");
-            return -1; // Codec not found
-        }
-
-        if (avcodec_open2(pCodecCtx, pCodec, NULL) < 0) {
-            FFLOGI("Could not open codec.");
-            return -1; // Could not open codec
-        }
-
-        // 获取native window
-        ANativeWindow *nativeWindow = ANativeWindow_fromSurface(env, surface);
-
-        // 获取视频宽高
-        int videoWidth = pCodecCtx->width;
-        int videoHeight = pCodecCtx->height;
-
-        // 设置native window的buffer大小,可自动拉伸
-        ANativeWindow_setBuffersGeometry(nativeWindow, videoWidth, videoHeight,
-                                         WINDOW_FORMAT_RGBA_8888);
-        ANativeWindow_Buffer windowBuffer;
-
-        if (avcodec_open2(pCodecCtx, pCodec, NULL) < 0) {
-            FFLOGI("Could not open codec.");
-            return -1; // Could not open codec
-        }
-
-        // Allocate video frame
-        AVFrame *pFrame = av_frame_alloc();
-
-        // 用于渲染
-        AVFrame *pFrameRGBA = av_frame_alloc();
-        if (pFrameRGBA == NULL || pFrame == NULL) {
-            FFLOGI("Could not allocate video frame.");
-            return -1;
-        }
-
-        // Determine required buffer size and allocate buffer
-        // buffer中数据就是用于渲染的,且格式为RGBA
-        int numBytes = av_image_get_buffer_size(AV_PIX_FMT_RGBA, pCodecCtx->width, pCodecCtx->height,
-                                                1);
-        uint8_t *buffer = (uint8_t *) av_malloc(numBytes * sizeof(uint8_t));
-        av_image_fill_arrays(pFrameRGBA->data, pFrameRGBA->linesize, buffer, AV_PIX_FMT_RGBA,
-                             pCodecCtx->width, pCodecCtx->height, 1);
-
-        // 由于解码出来的帧格式不是RGBA的,在渲染之前需要进行格式转换
-        struct SwsContext *sws_ctx = sws_getContext(pCodecCtx->width,
-                                                    pCodecCtx->height,
-                                                    pCodecCtx->pix_fmt,
-                                                    pCodecCtx->width,
-                                                    pCodecCtx->height,
-                                                    AV_PIX_FMT_RGBA,
-                                                    SWS_BILINEAR,
-                                                    NULL,
-                                                    NULL,
-                                                    NULL);
-
-        int frameFinished;
-        AVPacket packet;
-        while (av_read_frame(pFormatCtx, &packet) >= 0) {
-            // Is this a packet from the video stream?
-            if (packet.stream_index == videoStream) {
-
-                // Decode video frame
-                avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
-
-                // 并不是decode一次就可解码出一帧
-                if (frameFinished) {
-
-                    // lock native window buffer
-                    ANativeWindow_lock(nativeWindow, &windowBuffer, 0);
-
-                    // 格式转换
-                    sws_scale(sws_ctx, (uint8_t const *const *) pFrame->data,
-                              pFrame->linesize, 0, pCodecCtx->height,
-                              pFrameRGBA->data, pFrameRGBA->linesize);
-
-                    // 获取stride
-                    uint8_t *dst = (uint8_t *) windowBuffer.bits;
-                    int dstStride = windowBuffer.stride * 4;
-                    uint8_t *src = (pFrameRGBA->data[0]);
-                    int srcStride = pFrameRGBA->linesize[0];
-
-                    // 由于window的stride和帧的stride不同,因此需要逐行复制
-                    int h;
-                    for (h = 0; h < videoHeight; h++) {
-                        memcpy(dst + h * dstStride, src + h * srcStride, srcStride);
-                    }
-
-                    ANativeWindow_unlockAndPost(nativeWindow);
-                }
-
-            }
-            av_packet_unref(&packet);
-        }
-
-        av_free(buffer);
-        av_free(pFrameRGBA);
-
-        // Free the YUV frame
-        av_free(pFrame);
-
-        // Close the codecs
-        avcodec_close(pCodecCtx);
-
-        // Close the video file
-        avformat_close_input(&pFormatCtx);
-        return 0;
+//点击快进按钮
+    seekTo(5);
 }
