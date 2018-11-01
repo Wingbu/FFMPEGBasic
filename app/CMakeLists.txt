@@ -22,6 +22,7 @@ add_library( # Sets the name of the library.
              src/main/cpp/native-lib.cpp
              src/main/cpp/native-player.cpp
              src/main/cpp/native-mix-player.cpp
+             src/main/cpp/native-sl-player.cpp
              src/main/cpp/FFmpegVideo.cpp
              src/main/cpp/FFmpegMusic.cpp
              src/main/cpp/native-trans-video.cpp)
