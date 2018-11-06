@@ -1,7 +1,7 @@
 #include "FFmpegVideo.h"
 #include <android/log.h>
 
-#define LOGE(FORMAT,...) __android_log_print(ANDROID_LOG_ERROR,"LC XXX",FORMAT,##__VA_ARGS__);
+#define LOGE(FORMAT,...) __android_log_print(ANDROID_LOG_ERROR,"video",FORMAT,##__VA_ARGS__);
 
 static void (*video_call)(AVFrame *frame);
 void *videoPlay(void *args){
@@ -49,7 +49,7 @@ void *videoPlay(void *args){
     LOGE("解码 ")
     while (ffmpegVideo->isPlay) {
         ffmpegVideo->get(packet);
-        LOGE("解码 %d",packet->stream_index)
+//        LOGE("解码 %d",packet->stream_index)
         avcodec_decode_video2(ffmpegVideo->codec, frame, &frameCount, packet);
         if(!frameCount){
             continue;
@@ -58,16 +58,18 @@ void *videoPlay(void *args){
         sws_scale(ffmpegVideo->swsContext,(const uint8_t *const *)frame->data,frame->linesize,0,
                   frame->height,rgb_frame->data,
                   rgb_frame->linesize);
-        LOGE("frame 宽%d,高%d",frame->width,frame->height);
-        LOGE("rgb格式 宽%d,高%d",rgb_frame->width,rgb_frame->height);
+//        LOGE("frame 宽%d,高%d",frame->width,frame->height);
+//        LOGE("rgb格式 宽%d,高%d",rgb_frame->width,rgb_frame->height);
 
         if((pts=av_frame_get_best_effort_timestamp(frame))==AV_NOPTS_VALUE){
             pts=0;
         }
 
         play = pts*av_q2d(ffmpegVideo->time_base);
+        LOGE("play-1 %f,pts %f",play,pts);
         //纠正时间
         play = ffmpegVideo->synchronize(frame,play);
+        LOGE("play-2 %f",play);
 
         delay = play - last_play;
         if (delay <= 0 || delay > 1) {
@@ -78,16 +80,22 @@ void *videoPlay(void *args){
         last_play = play;
 //音频与视频的时间差
         diff = ffmpegVideo->clock - audio_clock;
+
 //        在合理范围外  才会延迟  加快
-        sync_threshold = (delay > 0.01 ? 0.01 : delay);
+        sync_threshold = (delay > 0.01 ? delay : 0.01);
+        LOGE("diff  %f sync_threshold %f delay %f",diff,sync_threshold,delay);
 
         if (fabs(diff) < 10) {
+             LOGE("fabs(diff) < 10");
             if (diff <= -sync_threshold) {
+                LOGE("diff <= -sync_threshold");
                 delay = 0;
             } else if (diff >=sync_threshold) {
+                LOGE("diff >=sync_threshold");
                 delay = 2 * delay;
             }
         }
+        LOGE("delay  %f ",delay);
         start_time += delay;
         actual_delay=start_time-av_gettime()/1000000.0;
         if (actual_delay < 0.01) {
@@ -100,7 +108,7 @@ void *videoPlay(void *args){
 //        av_frame_unref(rgb_frame);
 //        av_frame_unref(frame);
     }
-    LOGE("free packet");
+//    LOGE("free packet");
     av_free(packet);
     LOGE("free packet ok");
     LOGE("free packet");
@@ -228,6 +236,8 @@ double FFmpegVideo::synchronize(AVFrame *frame, double play) {
     double delay = extra_delay + frame_delay;
 //    LOGI("extra_delay:%f",extra_delay);
     clock += delay;
+    LOGE("extra_delay = %f ; frame_delay = %f ,repeat_pict = %f",extra_delay,frame_delay,repeat_pict)
+    LOGE("play = %f ; clock = %f ",play,clock)
     return play;
 }
 

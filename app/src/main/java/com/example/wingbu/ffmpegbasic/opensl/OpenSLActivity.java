@@ -46,4 +46,10 @@ public class OpenSLActivity extends AppCompatActivity {
             }
         });
     }
+
+    public native void playAsset(int msec);
+
+    public native void playUri();
+
+    public native void playPcm();
 }

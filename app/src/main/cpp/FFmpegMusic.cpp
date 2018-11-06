@@ -1,7 +1,7 @@
 #include "FFmpegMusic.h"
 #include <android/log.h>
 
-#define LOGE(FORMAT,...) __android_log_print(ANDROID_LOG_ERROR,"LC XXX",FORMAT,##__VA_ARGS__);
+#define LOGE(FORMAT,...) __android_log_print(ANDROID_LOG_ERROR,"LC music",FORMAT,##__VA_ARGS__);
 
 //播放线程
 void *MusicPlay(void *args){
@@ -24,7 +24,7 @@ int getPcm(FFmpegMusic *agrs){
             agrs->clock = av_q2d(agrs->time_base) * avPacket->pts;
         }
         //            解码  mp3   编码格式frame----pcm   frame
-        LOGE("解码")
+//        LOGE("解码")
         avcodec_decode_audio4(agrs->codec, avFrame, &gotframe, avPacket);
         if (gotframe) {
 
@@ -131,9 +131,9 @@ int FFmpegMusic::get(AVPacket *avPacket) {
     LOGE("取出队列")
     pthread_mutex_lock(&mutex);
     while (isPlay){
-        LOGE("取出对垒 xxxxxx")
+//        LOGE("取出对垒 xxxxxx")
         if(!queue.empty()&&isPause){
-            LOGE("ispause %d",isPause);
+//            LOGE("ispause %d",isPause);
             //如果队列中有数据可以拿出来
             if(av_packet_ref(avPacket,queue.front())){
                 break;
@@ -144,8 +144,8 @@ int FFmpegMusic::get(AVPacket *avPacket) {
             av_free(packet2);
             break;
         } else{
-            LOGE("音频执行wait")
-            LOGE("ispause %d",isPause);
+//            LOGE("音频执行wait")
+//            LOGE("ispause %d",isPause);
             pthread_cond_wait(&cond,&mutex);
 
         }
