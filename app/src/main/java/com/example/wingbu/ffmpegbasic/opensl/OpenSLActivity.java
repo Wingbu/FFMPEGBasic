@@ -1,5 +1,6 @@
 package com.example.wingbu.ffmpegbasic.opensl;
 
+import android.content.res.AssetManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -8,6 +9,12 @@ import android.widget.Button;
 import com.example.wingbu.ffmpegbasic.R;
 
 public class OpenSLActivity extends AppCompatActivity {
+
+    static {
+        System.loadLibrary("native-lib");
+    }
+
+    private AssetManager assetManager;
 
     private Button mBtnAsset;
     private Button mBtnUri;
@@ -18,6 +25,7 @@ public class OpenSLActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_open_sl);
         initView();
+        assetManager = getAssets();
     }
 
     private void initView(){
@@ -28,28 +36,28 @@ public class OpenSLActivity extends AppCompatActivity {
         mBtnAsset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                playAsset(assetManager,"");
             }
         });
 
         mBtnUri.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                playUri("");
             }
         });
 
         mBtnPcm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                playPcm("");
             }
         });
     }
 
-    public native void playAsset(int msec);
+    public native void playAsset(AssetManager assetManager , String fileName );
 
-    public native void playUri();
+    public native void playUri(String uri);
 
-    public native void playPcm();
+    public native void playPcm(String pcmPath);
 }

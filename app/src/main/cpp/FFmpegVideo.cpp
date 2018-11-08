@@ -98,6 +98,7 @@ void *videoPlay(void *args){
         LOGE("delay  %f ",delay);
         start_time += delay;
         actual_delay=start_time-av_gettime()/1000000.0;
+        LOGE("actual_delay : %f",actual_delay);
         if (actual_delay < 0.01) {
             actual_delay = 0.01;
         }
