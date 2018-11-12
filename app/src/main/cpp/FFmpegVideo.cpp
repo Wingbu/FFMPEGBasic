@@ -49,7 +49,7 @@ void *videoPlay(void *args){
     LOGE("解码 ")
     while (ffmpegVideo->isPlay) {
         ffmpegVideo->get(packet);
-//        LOGE("解码 %d",packet->stream_index)
+        LOGE("解码 %d",packet->stream_index)
         avcodec_decode_video2(ffmpegVideo->codec, frame, &frameCount, packet);
         if(!frameCount){
             continue;
@@ -66,7 +66,7 @@ void *videoPlay(void *args){
         }
 
         play = pts*av_q2d(ffmpegVideo->time_base);
-        LOGE("play-1 %f,pts %f",play,pts);
+        LOGE("play-1 %f,pts %f ffmpegVideo->time_base: %f",play,pts,ffmpegVideo->time_base);
         //纠正时间
         play = ffmpegVideo->synchronize(frame,play);
         LOGE("play-2 %f",play);
@@ -99,6 +99,7 @@ void *videoPlay(void *args){
         start_time += delay;
         actual_delay=start_time-av_gettime()/1000000.0;
         LOGE("actual_delay : %f",actual_delay);
+        LOGE("start_time : %f",start_time);
         if (actual_delay < 0.01) {
             actual_delay = 0.01;
         }
@@ -234,7 +235,7 @@ double FFmpegVideo::synchronize(AVFrame *frame, double play) {
     double fps = 1 / frame_delay;
     //pts 加上 这个延迟 是显示时间
     double extra_delay = repeat_pict / (2 * fps);
-    double delay = extra_delay + frame_delay;
+    double delay = extra_delay + frame_delay ;
 //    LOGI("extra_delay:%f",extra_delay);
     clock += delay;
     LOGE("extra_delay = %f ; frame_delay = %f ,repeat_pict = %f",extra_delay,frame_delay,repeat_pict)

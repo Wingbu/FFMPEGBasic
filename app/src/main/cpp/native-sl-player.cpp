@@ -26,19 +26,31 @@ SLEnvironmentalReverbSettings reverbSettings = SL_I3DL2_ENVIRONMENT_PRESET_STONE
 
 //assets 播放器
 SLObjectItf fdPlayerObject = NULL;
-SLPlayerItf fdPlayerPlayer = NULL;
+SLPlayItf fdPlayerPlay = NULL;
 SLVolumeItf fdPlayerVolume = NULL; //声音控制接口
 
 //uri 播放器
 SLObjectItf uriPlayerObject = NULL;
-SLPlayerItf uriPlayerPlay = NULL;
+SLPlayItf uriPlayerPlay = NULL;
 SLVolumeItf uriPlayerVolume = NULL;
+
+//pcm
+SLObjectItf pcmPlayerObject = NULL;
+SLPlayItf pcmPlayerPlay = NULL;
+SLVolumeItf pcmPlayerVolume = NULL;
+
+//缓冲器队列接口
+SLAndroidSimpleBufferQueueItf pcmBufferQueue;
+
+FILE *pcmFile;
+void *buffer;
+
+uint8_t *out_buffer;
 
 
 void release();
 
-void createEngine()
-{
+void createEngine(){
     SLresult result;
     result = slCreateEngine(&engineObject, 0, NULL, 0, NULL, NULL);
     result = (*engineObject)->Realize(engineObject, SL_BOOLEAN_FALSE);
@@ -121,7 +133,7 @@ Java_com_example_wingbu_ffmpegbasic_opensl_OpenSLActivity_playAsset(JNIEnv* env,
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_wingbu_ffmpegbasic_opensl_OpenSLActivity_playUri(JNIEnv* env,jobject instance,jstring uri) {
-    Slresult result;
+    SLresult result;
     release();
 
     const char* utf8 = env->GetStringUTFChars(uri,NULL);
@@ -145,17 +157,17 @@ Java_com_example_wingbu_ffmpegbasic_opensl_OpenSLActivity_playUri(JNIEnv* env,jo
     //第三步：设置播放器参数和创建播放器
     // configure audio source
     // (requires the INTERNET permission depending on the uri parameter)
-    SLDataLocator_URI loc_uri = {SL_DATALOCATOR_URI,(SLChar *)utf8};
-    SL_DATAFORMAT_MIME format_mime = {SL_DATAFORMAT_MIME, NULL ,SL_CONTAINERTYPE_UNSPECIFIED};
+    SLDataLocator_URI loc_uri = {SL_DATALOCATOR_URI,(SLchar *)utf8};
+    SLDataFormat_MIME  format_mime = {SL_DATAFORMAT_MIME, NULL ,SL_CONTAINERTYPE_UNSPECIFIED};
     SLDataSource audioSrc = {&loc_uri,&format_mime};
 
     //configure audio sink
-    SL_DATALOCATOR_OUTPUTMIX loc_outmix = {SL_DATALOCATOR_OUTPUTMIX,outputMixObject};
+    SLDataLocator_OutputMix loc_outmix = {SL_DATALOCATOR_OUTPUTMIX,outputMixObject};
     SLDataSink audioSnk = {&loc_outmix,NULL};
 
     //create audio player
     const SLInterfaceID ids[3] = {SL_IID_SEEK,SL_IID_MUTESOLO,SL_IID_VOLUME};
-    const SLboolean req[3] = {SL_BOOLEAN_TRUE,SL_BOOLEAN_TRUE,SL_BOOLEAN_TRUE}
+    const SLboolean req[3] = {SL_BOOLEAN_TRUE,SL_BOOLEAN_TRUE,SL_BOOLEAN_TRUE};
     result = (*engineEngine)->CreateAudioPlayer(engineEngine,&uriPlayerObject,&audioSrc,&audioSnk,3,ids,req);
 
     (void)result;
@@ -164,7 +176,7 @@ Java_com_example_wingbu_ffmpegbasic_opensl_OpenSLActivity_playUri(JNIEnv* env,jo
     env->ReleaseStringUTFChars(uri,utf8);
 
     //realize the player
-    result = （*uriPlayerObject)->Realize(uriPlayerObject,SL_BOOLEAN_FALSE);
+    result = (*uriPlayerObject)->Realize(uriPlayerObject, SL_BOOLEAN_FALSE);
     // this will always succeed on Android, but we check result for portability to other platforms
     if (SL_RESULT_SUCCESS != result) {
         (*uriPlayerObject)->Destroy(uriPlayerObject);
@@ -190,8 +202,79 @@ Java_com_example_wingbu_ffmpegbasic_opensl_OpenSLActivity_playUri(JNIEnv* env,jo
     //    (*uriPlayerVolume)->SetVolumeLevel(uriPlayerVolume, 0 * -50);
 }
 
-void release()
-{
+//extern "C"
+//JNIEXPORT void JNICALL
+//Java_com_example_wingbu_ffmpegbasic_opensl_OpenSLActivity_playPcm(JNIEnv* env,jobject instance,jstring pcmPath_){
+//    release();
+//    const char* pcmPath = env->GetStringUTFChars(pcmPath_);
+//    pcmFile = fopen(pcmPath,"r");
+//
+//    if(pcmFile == NULL){
+//        //LOGE("pcm open file error");
+//        return;
+//    }
+//
+//    out_buffer = (uint8_t *)malloc(44100 * 2 * 2);
+//    SLresult result;
+//
+//    //第一步：创建引擎
+//    createEngine();
+//
+//    //第二步：创建混音器
+//    const SLInterfaceID mids[1] = {SL_IID_ENVIRONMENTALREVERB};
+//    const SLboolean mreq[1] = {SL_BOOLEAN_FALSE};
+//    result = (*engineEngine)->CreateOutputMix(engineEngine,&outputMixObject,1,mids,mreq);
+//    (void)result;
+//    result = (*engineEngine)->Realize(outputMixObject,SL_BOOLEAN_FALSE);
+//    (void)result;
+//    result = (*engineEngine)->GetInterface(outputMixObject,SL_IID_ENVIRONMENTALREVERB,&outputMixEnvironmentalReverb);
+//    if(SL_RESULT_SUCCESS == result){
+//        result = (*outputMixEnvironmentalReverb)->SetEnvironmentalReverbProperties(outputMixEnvironmentalReverb,&reverbSettings);
+//        (void)result;
+//    }
+//    SLDataLocator_OutputMix outputMix = {SL_DATALOCATOR_OUTPUTMIX,outputMixObject};
+//    SLDataSink audioSnk = {&outputMix,NULL};
+//
+//    //第三步：配置pcm格式信息
+//    SLDataLocator_SLAndroidSimpleBufferQueue android_queue = {SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE,2};
+//    SLDataFormat_PCM  pcm = {
+//        SL_DATAFORMAT_PCM,//播放pcm格式的数据
+//        2,//2个声道（立体声）
+//        SL_SAMPLINGRATE_44_1,//44100hz的频率
+//        SL_PCMSAMPLEFORMAT_FIXED_16,//位数 16位
+//        SL_PCMSAMPLEFORMAT_FIXED_16,//和位数一致就行
+//        SL_SPEAKER_FRONT_LEFT | SL_SPEAKER_FRONT_RIGHT,//立体声（前左前右）
+//        SL_BYTEORDER_LITTLEENDIAN//结束标志
+//    };
+//    SLDataSource slDataSource = {&&android_queue,&pcm};
+//
+//    const SLInterfaceID ids[3] = {SL_IID_BUFFERQUEUE,SL_IID_EFFECTSEND,SL_IID_VOLUME};
+//    const SLboolean req[3] = {SL_BOOLEAN_TRUE,SL_BOOLEAN_TRUE,SL_BOOLEAN_TRUE};
+//
+//    result = (*engineEngine)->CreateAudioPlayer(engineEngine,&pcmPlayerObject,&slDataSource,&audioSnk,3,ids,req);
+//    //初始化播放器
+//    (*pcmPlayerObject)->Realize(pcmPlayerObject,SL_BOOLEAN_FALSE);
+//
+//    //得到接口后调用  获取Player接口
+//    (*pcmPlayerObject)->GetInterface(pcmPlayerObject, SL_IID_PLAY, &pcmPlayerPlay);
+//
+//    //注册回调缓冲区 获取缓冲队列接口
+//    (*pcmPlayerObject)->GetInterface(pcmPlayerObject, SL_IID_BUFFERQUEUE, &pcmBufferQueue);
+//    //缓冲接口回调
+//    (*pcmBufferQueue)->RegisterCallback(pcmBufferQueue, pcmBufferCallBack, NULL);
+//    //获取音量接口
+//    (*pcmPlayerObject)->GetInterface(pcmPlayerObject, SL_IID_VOLUME, &pcmPlayerVolume);
+//
+//    //获取播放状态接口
+//    (*pcmPlayerPlay)->SetPlayState(pcmPlayerPlay, SL_PLAYSTATE_PLAYING);
+//
+//    //主动调用回调函数开始工作
+//    pcmBufferCallBack(pcmBufferQueue, NULL);
+//
+//    env->ReleaseStringUTFChars(pcmPath_, pcmPath);
+//}
+
+void release(){
 
     if (pcmPlayerObject != NULL) {
         (*pcmPlayerObject)->Destroy(pcmPlayerObject);

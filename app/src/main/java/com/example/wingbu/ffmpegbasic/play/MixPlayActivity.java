@@ -86,7 +86,7 @@ public class MixPlayActivity extends AppCompatActivity {
     }
 
     public void player(View view) {
-        File file = new File("/sdcard/ff-input/", "example.mp4");
+        File file = new File("/sdcard/DCIM/Camera", "bf4cc0f4dde192592fc0f56f41c0a4be.mp4");
         //   davidPlayer.playJava("http://9890.vod.myqcloud.com/9890_4e292f9a3dd011e6b4078980237cc3d3.f20.mp4");
         davidPlayer.playJava(file.getAbsolutePath());
         // mTextView.setText(davidPlayer.getTotalTime()+"");
