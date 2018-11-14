@@ -82,7 +82,7 @@ void *videoPlay(void *args){
         diff = ffmpegVideo->clock - audio_clock;
 
 //        在合理范围外  才会延迟  加快
-        sync_threshold = (delay > 0.01 ? delay : 0.01);
+        sync_threshold = (delay > 0.1 ? delay : 0.1);
         LOGE("diff  %f sync_threshold %f delay %f",diff,sync_threshold,delay);
 
         if (fabs(diff) < 10) {
@@ -103,8 +103,9 @@ void *videoPlay(void *args){
         if (actual_delay < 0.01) {
             actual_delay = 0.01;
         }
-        av_usleep(actual_delay*1000000.0+6000);
-        LOGE("播放视频")
+        //av_usleep(actual_delay*1000000.0+6000);
+        av_usleep(delay*1000000.0+6000);
+        LOGE("播放视频 %f" ,delay);
         video_call(rgb_frame);
 //        av_packet_unref(packet);
 //        av_frame_unref(rgb_frame);
