@@ -104,7 +104,8 @@ void *videoPlay(void *args){
             actual_delay = 0.01;
         }
         //av_usleep(actual_delay*1000000.0+6000);
-        av_usleep(delay*1000000.0+6000);
+
+        av_usleep(delay*1000000.0);
         LOGE("播放视频 %f" ,delay);
         video_call(rgb_frame);
 //        av_packet_unref(packet);
