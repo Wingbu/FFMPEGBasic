@@ -36,7 +36,7 @@ public class OpenSLActivity extends AppCompatActivity {
         mBtnAsset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                playAsset(assetManager,"");
+                playAsset(assetManager,"31.mp3");
             }
         });
 
