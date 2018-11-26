@@ -43,14 +43,14 @@ public class OpenSLActivity extends AppCompatActivity {
         mBtnUri.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                playUri("");
+                playUri("http://mpge.5nd.com/2015/2015-11-26/69708/1.mp3");
             }
         });
 
         mBtnPcm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                playPcm("");
+                playPcm("/sdcard/ff-input/new_order_5_times_pcm.pcm");
             }
         });
     }
