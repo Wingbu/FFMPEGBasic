@@ -11,8 +11,8 @@
 #include<stdio.h>
 #include<malloc.h>
 
-#define LOGI(FORMAT,...) __android_log_print(ANDROID_LOG_INFO ,"open-sl",FORMAT,##__VA_VRGS__);
-#define LOGE(FORMAT,...) __android_log_print(ANDROID_LOG_ERROR,"open-sl",FORMAT,##__VA_VRGS__);
+#define FFLOGI(FORMAT,...) __android_log_print(ANDROID_LOG_INFO,"ffmpeg",FORMAT,##__VA_ARGS__);
+#define FFLOGE(FORMAT,...) __android_log_print(ANDROID_LOG_ERROR,"ffmpeg",FORMAT,##__VA_ARGS__);
 
 
 //引擎接口
@@ -206,11 +206,11 @@ Java_com_example_wingbu_ffmpegbasic_opensl_OpenSLActivity_playUri(JNIEnv* env,jo
 //JNIEXPORT void JNICALL
 //Java_com_example_wingbu_ffmpegbasic_opensl_OpenSLActivity_playPcm(JNIEnv* env,jobject instance,jstring pcmPath_){
 //    release();
-//    const char* pcmPath = env->GetStringUTFChars(pcmPath_);
+//    const char* pcmPath = env->GetStringUTFChars(pcmPath_,0);
 //    pcmFile = fopen(pcmPath,"r");
 //
 //    if(pcmFile == NULL){
-//        //LOGE("pcm open file error");
+//        FFLOGE("pcm open file error");
 //        return;
 //    }
 //
@@ -225,9 +225,9 @@ Java_com_example_wingbu_ffmpegbasic_opensl_OpenSLActivity_playUri(JNIEnv* env,jo
 //    const SLboolean mreq[1] = {SL_BOOLEAN_FALSE};
 //    result = (*engineEngine)->CreateOutputMix(engineEngine,&outputMixObject,1,mids,mreq);
 //    (void)result;
-//    result = (*engineEngine)->Realize(outputMixObject,SL_BOOLEAN_FALSE);
+//    result = (*outputMixObject)->Realize(outputMixObject,SL_BOOLEAN_FALSE);
 //    (void)result;
-//    result = (*engineEngine)->GetInterface(outputMixObject,SL_IID_ENVIRONMENTALREVERB,&outputMixEnvironmentalReverb);
+//    result = (*outputMixObject)->GetInterface(outputMixObject,SL_IID_ENVIRONMENTALREVERB,&outputMixEnvironmentalReverb);
 //    if(SL_RESULT_SUCCESS == result){
 //        result = (*outputMixEnvironmentalReverb)->SetEnvironmentalReverbProperties(outputMixEnvironmentalReverb,&reverbSettings);
 //        (void)result;
@@ -236,7 +236,7 @@ Java_com_example_wingbu_ffmpegbasic_opensl_OpenSLActivity_playUri(JNIEnv* env,jo
 //    SLDataSink audioSnk = {&outputMix,NULL};
 //
 //    //第三步：配置pcm格式信息
-//    SLDataLocator_SLAndroidSimpleBufferQueue android_queue = {SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE,2};
+//    SLDataLocator_AndroidSimpleBufferQueue android_queue = {SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE,2};
 //    SLDataFormat_PCM  pcm = {
 //        SL_DATAFORMAT_PCM,//播放pcm格式的数据
 //        2,//2个声道（立体声）

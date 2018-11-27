@@ -14,12 +14,10 @@
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity" />
         <activity android:name=".file.FileIndexActivity" />
-        <activity android:name=".play.VideoPlayActivity"></activity>
+        <activity android:name=".play.VideoPlayActivity" />
         <activity android:name=".play.VideoViewActivity" />
         <activity android:name=".trans.TransVideoActivity" />
-        <activity android:name=".play.MixPlayActivity">
-
-        </activity>
+        <activity android:name=".play.MixPlayActivity"></activity>
         <activity android:name=".opensl.OpenSLActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,6 +25,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".play.RawPlayerActivity"></activity>
     </application>
 
 </manifest>

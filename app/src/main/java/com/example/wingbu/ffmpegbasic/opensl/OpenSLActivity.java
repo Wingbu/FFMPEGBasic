@@ -59,5 +59,5 @@ public class OpenSLActivity extends AppCompatActivity {
 
     public native void playUri(String uri);
 
-    public native void playPcm(String pcmPath);
+    public native void playPcm(String pcmPath_);
 }
