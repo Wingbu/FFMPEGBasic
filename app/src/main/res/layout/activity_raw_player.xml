@@ -6,6 +6,15 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.example.wingbu.ffmpegbasic.play.RawPlayerActivity">
+
+    <TextView
+        android:id="@+id/hint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="单击播放开始播放音乐"
+        android:textSize="15sp"
+        android:layout_margin="11dp"/>
+
     <Button
         android:text="play"
         android:layout_width="match_parent"
