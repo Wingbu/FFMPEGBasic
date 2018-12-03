@@ -50,7 +50,6 @@ public class OpenSLActivity extends AppCompatActivity {
         mBtnPcm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                playPcm("/sdcard/ff-input/new_order_5_times_pcm.pcm");
             }
         });
     }

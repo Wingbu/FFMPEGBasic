@@ -1,13 +1,17 @@
 package com.example.wingbu.ffmpegbasic.play;
 
+import android.content.res.AssetFileDescriptor;
 import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.wingbu.ffmpegbasic.R;
+
+import java.io.IOException;
 
 public class RawPlayerActivity extends AppCompatActivity {
 
@@ -21,13 +25,35 @@ public class RawPlayerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_raw_player);
         init();
-        mediaPlayer = MediaPlayer.create(RawPlayerActivity.this, R.raw.new_order_5_times_pcm);//创建mediaplayer对象
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+//        mediaPlayer = MediaPlayer.create(RawPlayerActivity.this, R.raw.new_order_5_times);//创建mediaplayer对象
+//        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+//            @Override
+//            public void onCompletion(MediaPlayer mediaPlayer) {
+//                play();
+//            }
+//        });
+        //实例化播放内核
+        mediaPlayer = new android.media.MediaPlayer();
+        //获得播放源访问入口
+        AssetFileDescriptor afd = getResources().openRawResourceFd(R.raw.hajima_original); // 注意这里的区别
+        // 给MediaPlayer设置播放源
+        try {
+            mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.i("Wings"," mediaPlayer.setDataSource()   printStackTrace ");
+        }
+        //设置准备就绪状态监听
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
+            public void onPrepared(MediaPlayer mp) {
+                // 开始播放
                 play();
+//                mediaPlayer.start();
             }
         });
+        //准备播放
+        mediaPlayer.prepareAsync();
     }
 
     @Override
@@ -90,9 +116,7 @@ public class RawPlayerActivity extends AppCompatActivity {
 
     private void play(){
         try{
-            mediaPlayer.reset();
-            mediaPlayer = MediaPlayer.create(RawPlayerActivity.this, R.raw.new_order_5_times_pcm);//重新设置要播放的音频
-            mediaPlayer.start();//开始播放
+            mediaPlayer.start();
             hint.setText("正在播放音频...");
             playBtn.setEnabled(false);
             pauseBtn.setEnabled(true);
