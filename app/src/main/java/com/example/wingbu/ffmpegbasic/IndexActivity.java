@@ -1,9 +1,16 @@
 package com.example.wingbu.ffmpegbasic;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+
+import com.example.wingbu.ffmpegbasic.opensl.OpenSLActivity;
+import com.example.wingbu.ffmpegbasic.play.MixPlayActivity;
+import com.example.wingbu.ffmpegbasic.play.RawPlayerActivity;
+import com.example.wingbu.ffmpegbasic.play.VideoPlayActivity;
+import com.example.wingbu.ffmpegbasic.play.VideoViewActivity;
 
 public class IndexActivity extends AppCompatActivity {
 
@@ -32,35 +39,35 @@ public class IndexActivity extends AppCompatActivity {
         mBtnOne.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                jumpToRawPlayMusic();
             }
         });
 
         mBtnTwo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                jumpToOpenSLPlayMusic();
             }
         });
 
         mBtnThree.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                jumpToPlayVideo();
             }
         });
 
         mBtnFour.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                jumpToMixPlayVideo();
             }
         });
 
         mBtnFive.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                jumpToViewPlayVideo();
             }
         });
 
@@ -72,9 +79,29 @@ public class IndexActivity extends AppCompatActivity {
         });
     }
 
-    private void jumpToRawPlayMusic(){}
+    private void jumpToRawPlayMusic(){
+        Intent intent = new Intent(IndexActivity.this, RawPlayerActivity.class);
+        startActivity(intent);
+    }
 
-    private void jumpToPlayVideo(){}
+    private void jumpToOpenSLPlayMusic(){
+        Intent intent = new Intent(IndexActivity.this, OpenSLActivity.class);
+        startActivity(intent);
+    }
 
-    private void jumpToMixPlayVideo(){}
+    private void jumpToPlayVideo(){
+        Intent intent = new Intent(IndexActivity.this, VideoPlayActivity.class);
+        startActivity(intent);
+    }
+
+    private void jumpToMixPlayVideo(){
+        Intent intent = new Intent(IndexActivity.this, MixPlayActivity.class);
+        startActivity(intent);
+    }
+
+    private void jumpToViewPlayVideo(){
+        Intent intent = new Intent(IndexActivity.this, VideoViewActivity.class);
+        startActivity(intent);
+    }
+
 }
