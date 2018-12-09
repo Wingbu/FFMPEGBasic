@@ -11,8 +11,8 @@
 #include<stdio.h>
 #include<malloc.h>
 
-#define FFLOGI(FORMAT,...) __android_log_print(ANDROID_LOG_INFO,"ffmpeg",FORMAT,##__VA_ARGS__);
-#define FFLOGE(FORMAT,...) __android_log_print(ANDROID_LOG_ERROR,"ffmpeg",FORMAT,##__VA_ARGS__);
+#define FFLOGI(FORMAT,...) __android_log_print(ANDROID_LOG_INFO,"ffmpeg_sl",FORMAT,##__VA_ARGS__);
+#define FFLOGE(FORMAT,...) __android_log_print(ANDROID_LOG_ERROR,"ffmpeg_sl",FORMAT,##__VA_ARGS__);
 
 
 //引擎接口
@@ -202,77 +202,108 @@ Java_com_example_wingbu_ffmpegbasic_opensl_OpenSLActivity_playUri(JNIEnv* env,jo
     //    (*uriPlayerVolume)->SetVolumeLevel(uriPlayerVolume, 0 * -50);
 }
 
-//extern "C"
-//JNIEXPORT void JNICALL
-//Java_com_example_wingbu_ffmpegbasic_opensl_OpenSLActivity_playPcm(JNIEnv* env,jobject instance,jstring pcmPath_){
-//    release();
-//    const char* pcmPath = env->GetStringUTFChars(pcmPath_,0);
-//    pcmFile = fopen(pcmPath,"r");
-//
-//    if(pcmFile == NULL){
-//        FFLOGE("pcm open file error");
-//        return;
-//    }
-//
-//    out_buffer = (uint8_t *)malloc(44100 * 2 * 2);
-//    SLresult result;
-//
-//    //第一步：创建引擎
-//    createEngine();
-//
-//    //第二步：创建混音器
-//    const SLInterfaceID mids[1] = {SL_IID_ENVIRONMENTALREVERB};
-//    const SLboolean mreq[1] = {SL_BOOLEAN_FALSE};
-//    result = (*engineEngine)->CreateOutputMix(engineEngine,&outputMixObject,1,mids,mreq);
-//    (void)result;
-//    result = (*outputMixObject)->Realize(outputMixObject,SL_BOOLEAN_FALSE);
-//    (void)result;
-//    result = (*outputMixObject)->GetInterface(outputMixObject,SL_IID_ENVIRONMENTALREVERB,&outputMixEnvironmentalReverb);
-//    if(SL_RESULT_SUCCESS == result){
-//        result = (*outputMixEnvironmentalReverb)->SetEnvironmentalReverbProperties(outputMixEnvironmentalReverb,&reverbSettings);
-//        (void)result;
-//    }
-//    SLDataLocator_OutputMix outputMix = {SL_DATALOCATOR_OUTPUTMIX,outputMixObject};
-//    SLDataSink audioSnk = {&outputMix,NULL};
-//
-//    //第三步：配置pcm格式信息
-//    SLDataLocator_AndroidSimpleBufferQueue android_queue = {SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE,2};
-//    SLDataFormat_PCM  pcm = {
-//        SL_DATAFORMAT_PCM,//播放pcm格式的数据
-//        2,//2个声道（立体声）
-//        SL_SAMPLINGRATE_44_1,//44100hz的频率
-//        SL_PCMSAMPLEFORMAT_FIXED_16,//位数 16位
-//        SL_PCMSAMPLEFORMAT_FIXED_16,//和位数一致就行
-//        SL_SPEAKER_FRONT_LEFT | SL_SPEAKER_FRONT_RIGHT,//立体声（前左前右）
-//        SL_BYTEORDER_LITTLEENDIAN//结束标志
-//    };
-//    SLDataSource slDataSource = {&&android_queue,&pcm};
-//
-//    const SLInterfaceID ids[3] = {SL_IID_BUFFERQUEUE,SL_IID_EFFECTSEND,SL_IID_VOLUME};
-//    const SLboolean req[3] = {SL_BOOLEAN_TRUE,SL_BOOLEAN_TRUE,SL_BOOLEAN_TRUE};
-//
-//    result = (*engineEngine)->CreateAudioPlayer(engineEngine,&pcmPlayerObject,&slDataSource,&audioSnk,3,ids,req);
-//    //初始化播放器
-//    (*pcmPlayerObject)->Realize(pcmPlayerObject,SL_BOOLEAN_FALSE);
-//
-//    //得到接口后调用  获取Player接口
-//    (*pcmPlayerObject)->GetInterface(pcmPlayerObject, SL_IID_PLAY, &pcmPlayerPlay);
-//
-//    //注册回调缓冲区 获取缓冲队列接口
-//    (*pcmPlayerObject)->GetInterface(pcmPlayerObject, SL_IID_BUFFERQUEUE, &pcmBufferQueue);
-//    //缓冲接口回调
-//    (*pcmBufferQueue)->RegisterCallback(pcmBufferQueue, pcmBufferCallBack, NULL);
-//    //获取音量接口
-//    (*pcmPlayerObject)->GetInterface(pcmPlayerObject, SL_IID_VOLUME, &pcmPlayerVolume);
-//
-//    //获取播放状态接口
-//    (*pcmPlayerPlay)->SetPlayState(pcmPlayerPlay, SL_PLAYSTATE_PLAYING);
-//
-//    //主动调用回调函数开始工作
-//    pcmBufferCallBack(pcmBufferQueue, NULL);
-//
-//    env->ReleaseStringUTFChars(pcmPath_, pcmPath);
-//}
+void getPcmData(void **pcm)
+{
+    while(!feof(pcmFile))
+    {
+        fread(out_buffer, 44100 * 2 * 2, 1, pcmFile);
+        if(out_buffer == NULL)
+        {
+            FFLOGE("%s", "read end");
+            break;
+        } else{
+            FFLOGE("%s", "reading");
+        }
+        *pcm = out_buffer;
+        break;
+    }
+}
+
+void pcmBufferCallBack(SLAndroidSimpleBufferQueueItf bf, void * context)
+{
+    //assert(NULL == context);
+    getPcmData(&buffer);
+    // for streaming playback, replace this test by logic to find and fill the next buffer
+    if (NULL != buffer) {
+        SLresult result;
+        // enqueue another buffer
+        result = (*pcmBufferQueue)->Enqueue(pcmBufferQueue, buffer, 44100 * 2 * 2);
+        // the most likely other result is SL_RESULT_BUFFER_INSUFFICIENT,
+        // which for this code example would indicate a programming error
+    }
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_wingbu_ffmpegbasic_opensl_OpenSLActivity_playPcm(JNIEnv* env,jobject instance,jstring pcmPath_){
+    release();
+    const char *pcmPath = env->GetStringUTFChars(pcmPath_,0);
+    pcmFile = fopen(pcmPath,"r");
+
+    if(pcmFile == NULL){
+        FFLOGE("pcm open file error");
+        return;
+    }
+
+    out_buffer = (uint8_t *)malloc(44100 * 2 * 2);
+    SLresult result;
+
+    //第一步：创建引擎
+    createEngine();
+
+    //第二步：创建混音器
+    const SLInterfaceID mids[1] = {SL_IID_ENVIRONMENTALREVERB};
+    const SLboolean mreq[1] = {SL_BOOLEAN_FALSE};
+    result = (*engineEngine)->CreateOutputMix(engineEngine,&outputMixObject,1,mids,mreq);
+    (void)result;
+    result = (*outputMixObject)->Realize(outputMixObject,SL_BOOLEAN_FALSE);
+    (void)result;
+    result = (*outputMixObject)->GetInterface(outputMixObject,SL_IID_ENVIRONMENTALREVERB,&outputMixEnvironmentalReverb);
+    if(SL_RESULT_SUCCESS == result){
+        result = (*outputMixEnvironmentalReverb)->SetEnvironmentalReverbProperties(outputMixEnvironmentalReverb,&reverbSettings);
+        (void)result;
+    }
+    SLDataLocator_OutputMix outputMix = {SL_DATALOCATOR_OUTPUTMIX,outputMixObject};
+    SLDataSink audioSnk = {&outputMix,NULL};
+
+    //第三步：配置pcm格式信息
+    SLDataLocator_AndroidSimpleBufferQueue android_queue = {SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE,2};
+    SLDataFormat_PCM  pcm = {
+        SL_DATAFORMAT_PCM,//播放pcm格式的数据
+        2,//2个声道（立体声）
+        SL_SAMPLINGRATE_44_1,//44100hz的频率
+        SL_PCMSAMPLEFORMAT_FIXED_16,//位数 16位
+        SL_PCMSAMPLEFORMAT_FIXED_16,//和位数一致就行
+        SL_SPEAKER_FRONT_LEFT | SL_SPEAKER_FRONT_RIGHT,//立体声（前左前右）
+        SL_BYTEORDER_LITTLEENDIAN//结束标志
+    };
+    SLDataSource slDataSource = {&android_queue,&pcm};
+
+    const SLInterfaceID ids[3] = {SL_IID_BUFFERQUEUE,SL_IID_EFFECTSEND,SL_IID_VOLUME};
+    const SLboolean req[3] = {SL_BOOLEAN_TRUE,SL_BOOLEAN_TRUE,SL_BOOLEAN_TRUE};
+
+    result = (*engineEngine)->CreateAudioPlayer(engineEngine,&pcmPlayerObject,&slDataSource,&audioSnk,3,ids,req);
+    //初始化播放器
+    (*pcmPlayerObject)->Realize(pcmPlayerObject,SL_BOOLEAN_FALSE);
+
+    //得到接口后调用  获取Player接口
+    (*pcmPlayerObject)->GetInterface(pcmPlayerObject, SL_IID_PLAY, &pcmPlayerPlay);
+
+    //注册回调缓冲区 获取缓冲队列接口
+    (*pcmPlayerObject)->GetInterface(pcmPlayerObject, SL_IID_BUFFERQUEUE, &pcmBufferQueue);
+    //缓冲接口回调
+    (*pcmBufferQueue)->RegisterCallback(pcmBufferQueue, pcmBufferCallBack, NULL);
+    //获取音量接口
+    (*pcmPlayerObject)->GetInterface(pcmPlayerObject, SL_IID_VOLUME, &pcmPlayerVolume);
+
+    //获取播放状态接口
+    (*pcmPlayerPlay)->SetPlayState(pcmPlayerPlay, SL_PLAYSTATE_PLAYING);
+
+    //主动调用回调函数开始工作
+    pcmBufferCallBack(pcmBufferQueue, NULL);
+
+    env->ReleaseStringUTFChars(pcmPath_, pcmPath);
+}
 
 void release(){
 
