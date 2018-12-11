@@ -114,5 +114,6 @@ public class TransVideoActivity extends AppCompatActivity {
         }
     }
 
-    public native void transYuvToH264(String inputFilePath,String outputFilePath);
+//    public native void transYuvToH264(String inputFilePath,String outputFilePath);
+    public native int transYuvToJpeg(String inputFilePath,String outputFilePath);
 }
