@@ -2,13 +2,11 @@
 #include <jni.h>
 #include <android/log.h>
 
-#define __STDC_CONSTANT_MACROS
-
 extern "C"{
-    //编码
-    #include "libavcodec/avcodec.h"
-    //封装格式处理
-    #include "libavformat/avformat.h"
+//编码
+#include "libavcodec/avcodec.h"
+//封装格式处理
+#include "libavformat/avformat.h"
 };
 
 #define FFLOGI(FORMAT,...) __android_log_print(ANDROID_LOG_INFO,"ffmpeg",FORMAT,##__VA_ARGS__);
