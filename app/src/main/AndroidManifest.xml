@@ -19,7 +19,7 @@
         <activity android:name=".trans.TransVideoActivity" />
         <activity android:name=".play.MixPlayActivity" />
         <activity android:name=".opensl.OpenSLActivity" />
-        <activity android:name=".play.RawPlayerActivity"></activity>
+        <activity android:name=".play.RawPlayerActivity" />
         <activity android:name=".IndexActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,7 +27,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".parse.H264ParseActivity"></activity>
+        <activity android:name=".parse.H264ParseActivity" />
+        <activity android:name=".trans.TransPCMActivity"></activity>
     </application>
 
 </manifest>

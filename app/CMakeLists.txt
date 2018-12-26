@@ -25,7 +25,8 @@ add_library( # Sets the name of the library.
              src/main/cpp/native-sl-player.cpp
              src/main/cpp/FFmpegVideo.cpp
              src/main/cpp/FFmpegMusic.cpp
-             src/main/cpp/native-trans-video.cpp)
+             src/main/cpp/native-trans-video.cpp
+             src/main/cpp/native-deal-pcm.cpp)
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by
