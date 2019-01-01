@@ -33,4 +33,9 @@ public class TransPCMActivity extends AppCompatActivity {
 
     public native int devidePcmToLeftRight(String inputPcmPath,String outputLeftPcmPath,String outputRightPcmPath);
     public native int transPcmToAac(String inputFilePath,String outputFilePath);
+    public native int makePcmVolumeHalf(String inputFilePath,String outputFilePath);
+    public native int makePcmSpeedUp(String inputFilePath,String outputFilePath);
+    public native int makePcm16ToPcm8(String inputFilePath,String outputFilePath);
+    public native int cutPcm(String inputFilePath,String outputFilePath,int start_num,int dur_num);
+    public native int transPcmToWave(String inputFilePath,String outputFilePath);
 }
