@@ -11,6 +11,7 @@ import com.example.wingbu.ffmpegbasic.play.MixPlayActivity;
 import com.example.wingbu.ffmpegbasic.play.RawPlayerActivity;
 import com.example.wingbu.ffmpegbasic.play.VideoPlayActivity;
 import com.example.wingbu.ffmpegbasic.play.VideoViewActivity;
+import com.example.wingbu.ffmpegbasic.trans.TransPCMActivity;
 
 public class IndexActivity extends AppCompatActivity {
 
@@ -74,7 +75,7 @@ public class IndexActivity extends AppCompatActivity {
         mBtnSix.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                jumpToDealPcm();
             }
         });
     }
@@ -101,6 +102,11 @@ public class IndexActivity extends AppCompatActivity {
 
     private void jumpToViewPlayVideo(){
         Intent intent = new Intent(IndexActivity.this, VideoViewActivity.class);
+        startActivity(intent);
+    }
+
+    private void jumpToDealPcm(){
+        Intent intent = new Intent(IndexActivity.this, TransPCMActivity.class);
         startActivity(intent);
     }
 

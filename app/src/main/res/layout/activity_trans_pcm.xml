@@ -1,9 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.example.wingbu.ffmpegbasic.trans.TransPCMActivity">
 
-</android.support.constraint.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <EditText
+            android:id="@+id/et_file_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="4"
+            android:textSize="20sp"
+            android:layout_marginTop="10dp"/>
+        <Button
+            android:id="@+id/btn_choose_file"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="选择文件"
+            android:textSize="12sp"
+            android:layout_margin="10dp"/>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="1dp"
+        android:background="#000000"></View>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="10dp">
+        <Button
+            android:id="@+id/btn_divide_left_right"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="将PCM分为左右声道"/>
+        <Button
+            android:id="@+id/btn_volume_half"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="PCM音量减半"/>
+        <Button
+            android:id="@+id/btn_speed_up"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="将PCM加速播放"/>
+        <Button
+            android:id="@+id/btn_change_16_to_8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="PCM16位转为8位"/>
+        <Button
+            android:id="@+id/btn_trans_pcm_to_wav"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="将PCM文件转为wav文件"/>
+        <Button
+            android:id="@+id/btn_goto_play_music"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="前往播放"/>
+    </LinearLayout>
+</LinearLayout>

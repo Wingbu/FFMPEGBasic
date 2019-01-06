@@ -28,7 +28,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".parse.H264ParseActivity" />
-        <activity android:name=".trans.TransPCMActivity"></activity>
+        <activity android:name=".trans.TransPCMActivity"
+            android:label="PCM文件处理"></activity>
     </application>
 
 </manifest>

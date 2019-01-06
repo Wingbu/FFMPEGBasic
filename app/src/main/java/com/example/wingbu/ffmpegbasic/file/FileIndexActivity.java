@@ -1,5 +1,6 @@
 package com.example.wingbu.ffmpegbasic.file;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -105,5 +106,14 @@ public class FileIndexActivity extends AppCompatActivity {
             result.add(file);
         }
         return result;
+    }
+
+    /**
+     * 进入文件选择页，获取对应视频文件路径，result返回文件路径
+     * @param activity   启动页的activity
+     */
+    public void startActivityToFindFilePath(Activity activity){
+        Intent intent = new Intent(activity , FileIndexActivity.class);
+        startActivityForResult(intent, FileResultEntity.REQUEST_CODE);
     }
 }
