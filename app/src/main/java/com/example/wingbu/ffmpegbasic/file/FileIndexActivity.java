@@ -17,6 +17,10 @@ import com.example.wingbu.ffmpegbasic.utils.FileUtils;
 import java.io.File;
 import java.util.ArrayList;
 
+/**
+ * 文件选择页
+ *    用于本demo使用时选择对应的音频视频文件
+ */
 public class FileIndexActivity extends AppCompatActivity {
 
     public static final String TAG = "FileIndexActivity";
@@ -87,6 +91,7 @@ public class FileIndexActivity extends AppCompatActivity {
         Intent resultIntent = new Intent();
         resultIntent.putExtra(FileResultEntity.RESULT_TAG,file.getAbsolutePath());
         setResult(FileResultEntity.RESULT_CODE_SUCCESS,resultIntent);
+        finish();
     }
 
     private void showDeleteDialog(File file){

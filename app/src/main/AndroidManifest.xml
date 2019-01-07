@@ -13,12 +13,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity" />
-        <activity android:name=".file.FileIndexActivity" />
+        <activity android:name=".file.FileIndexActivity"
+            android:label="选择文件"/>
         <activity android:name=".play.VideoPlayActivity" />
         <activity android:name=".play.VideoViewActivity" />
         <activity android:name=".trans.TransVideoActivity" />
         <activity android:name=".play.MixPlayActivity" />
-        <activity android:name=".opensl.OpenSLActivity" />
+        <activity android:name=".opensl.OpenSLActivity"
+            android:label="OpenSL播放音頻"/>
         <activity android:name=".play.RawPlayerActivity" />
         <activity android:name=".IndexActivity">
             <intent-filter>
