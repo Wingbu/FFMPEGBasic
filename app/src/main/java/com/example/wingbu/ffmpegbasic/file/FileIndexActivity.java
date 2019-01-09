@@ -1,6 +1,9 @@
 package com.example.wingbu.ffmpegbasic.file;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +16,7 @@ import android.widget.TextView;
 import com.example.wingbu.ffmpegbasic.R;
 import com.example.wingbu.ffmpegbasic.utils.FilePathUtils;
 import com.example.wingbu.ffmpegbasic.utils.FileUtils;
+import com.example.wingbu.ffmpegbasic.utils.ToastUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -85,7 +89,11 @@ public class FileIndexActivity extends AppCompatActivity {
     }
 
     private void setOnActivityResult(File file){
-        //参数校验(先偷个懒)
+        //参数校验
+        if( null == file){
+            ToastUtils.showShortToast(FileIndexActivity.this,"未选择文件");
+            return;
+        }
 
         //返回结果
         Intent resultIntent = new Intent();
@@ -94,8 +102,36 @@ public class FileIndexActivity extends AppCompatActivity {
         finish();
     }
 
-    private void showDeleteDialog(File file){
-        //参数校验(先偷个懒)
+    private void showDeleteDialog(final File file){
+        //参数校验
+        if( null == file){
+            ToastUtils.showShortToast(FileIndexActivity.this,"未选择文件");
+            return;
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(FileIndexActivity.this);
+        builder.setMessage("是否删除"+file.getName());
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                boolean isDelete = file.delete();
+                if(isDelete){
+                    ToastUtils.showShortToast(FileIndexActivity.this,"删除成功");
+                    refreshFileList();
+                }else {
+                    ToastUtils.showShortToast(FileIndexActivity.this,"删除失败");
+                }
+                dialog.dismiss();
+                refreshFileList();
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
     }
 
     private ArrayList<File> getFileList(){
