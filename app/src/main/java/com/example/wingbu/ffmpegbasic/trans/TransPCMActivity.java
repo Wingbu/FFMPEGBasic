@@ -21,12 +21,12 @@ public class TransPCMActivity extends AppCompatActivity {
 
     private String mFilePath;
 
-    private Button mBtnOne;
-    private Button mBtnTwo;
-    private Button mBtnThree;
-    private Button mBtnFour;
-    private Button mBtnFive;
-    private Button mBtnSix;
+    private Button mBtnLeftRight;
+    private Button mBtnVolumeHalf;
+    private Button mBtnSpeedUp;
+    private Button mBtn16To8;
+    private Button mBtnPcmToWav;
+    private Button mBtnGoPlay;
 
     private EditText etFilePath;
     private Button   btnChooseFilePath;
@@ -48,49 +48,49 @@ public class TransPCMActivity extends AppCompatActivity {
         btnChooseFilePath = (Button) findViewById(R.id.btn_choose_file);
 
 
-        mBtnOne = (Button) findViewById(R.id.btn_divide_left_right);
-        mBtnTwo = (Button) findViewById(R.id.btn_volume_half);
-        mBtnThree = (Button) findViewById(R.id.btn_speed_up);
-        mBtnFour = (Button) findViewById(R.id.btn_change_16_to_8);
-        mBtnFive = (Button) findViewById(R.id.btn_trans_pcm_to_wav);
-        mBtnSix = (Button) findViewById(R.id.btn_goto_play_music);
+        mBtnLeftRight = (Button) findViewById(R.id.btn_divide_left_right);
+        mBtnVolumeHalf = (Button) findViewById(R.id.btn_volume_half);
+        mBtnSpeedUp= (Button) findViewById(R.id.btn_speed_up);
+        mBtn16To8 = (Button) findViewById(R.id.btn_change_16_to_8);
+        mBtnPcmToWav = (Button) findViewById(R.id.btn_trans_pcm_to_wav);
+        mBtnGoPlay = (Button) findViewById(R.id.btn_goto_play_music);
 
-        mBtnOne.setOnClickListener(new View.OnClickListener() {
+        mBtnLeftRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
             }
         });
 
-        mBtnTwo.setOnClickListener(new View.OnClickListener() {
+        mBtnVolumeHalf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
             }
         });
 
-        mBtnThree.setOnClickListener(new View.OnClickListener() {
+        mBtnSpeedUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
             }
         });
 
-        mBtnFour.setOnClickListener(new View.OnClickListener() {
+        mBtn16To8.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
             }
         });
 
-        mBtnFive.setOnClickListener(new View.OnClickListener() {
+        mBtnPcmToWav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
             }
         });
 
-        mBtnSix.setOnClickListener(new View.OnClickListener() {
+        mBtnGoPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(TextUtils.isEmpty(mFilePath)){
