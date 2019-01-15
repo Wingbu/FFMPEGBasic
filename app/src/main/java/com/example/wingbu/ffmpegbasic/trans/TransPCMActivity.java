@@ -12,12 +12,14 @@ import android.widget.TextView;
 import com.example.wingbu.ffmpegbasic.R;
 import com.example.wingbu.ffmpegbasic.file.FileIndexActivity;
 import com.example.wingbu.ffmpegbasic.file.FileResultEntity;
+import com.example.wingbu.ffmpegbasic.opensl.OpenSLActivity;
+import com.example.wingbu.ffmpegbasic.utils.DateUtils;
 import com.example.wingbu.ffmpegbasic.utils.TextUtils;
 import com.example.wingbu.ffmpegbasic.utils.ToastUtils;
 
 public class TransPCMActivity extends AppCompatActivity {
 
-    public static final String TAG = "TransVideoActivity";
+    public static final String TAG = "TransPCMActivity";
 
     private String mFilePath;
 
@@ -58,28 +60,50 @@ public class TransPCMActivity extends AppCompatActivity {
         mBtnLeftRight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                String date = DateUtils.getDate(System.currentTimeMillis(),DateUtils.DATE_FORMAT_1);
+                String inputFIle = "sdcard/ff-input/NocturneNo2inEflat_44.1k_s16le.pcm";
+                String outputFIleLeft = "sdcard/ff-input/output_left_"+ date +".pcm";
+                String outputFIleRight = "sdcard/ff-input/output_right_"+ date +".pcm";
+                Log.i(TAG," inputFIle = " + inputFIle);
+                Log.i(TAG," outputFIleLeft = " + outputFIleLeft);
+                Log.i(TAG," outputFIleRight = " + outputFIleRight);
+                dividePcmToLeftRight(inputFIle,outputFIleLeft,outputFIleRight);
             }
         });
 
         mBtnVolumeHalf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                String date = DateUtils.getDate(System.currentTimeMillis(),DateUtils.DATE_FORMAT_1);
+                String inputFIle = "sdcard/ff-input/NocturneNo2inEflat_44.1k_s16le.pcm";
+                String outputFIle = "sdcard/ff-input/output_volume_half_"+ date +".pcm";
+                Log.i(TAG," inputFIle = " + inputFIle);
+                Log.i(TAG," outputFIle = " + outputFIle);
+                makePcmVolumeHalf(inputFIle,outputFIle);
             }
         });
 
         mBtnSpeedUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                String date = DateUtils.getDate(System.currentTimeMillis(),DateUtils.DATE_FORMAT_1);
+                String inputFIle = "sdcard/ff-input/NocturneNo2inEflat_44.1k_s16le.pcm";
+                String outputFIle = "sdcard/ff-input/output_speed_up_"+ date +".pcm";
+                Log.i(TAG," inputFIle = " + inputFIle);
+                Log.i(TAG," outputFIle = " + outputFIle);
+                makePcmSpeedUp(inputFIle,outputFIle);
             }
         });
 
         mBtn16To8.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                String date = DateUtils.getDate(System.currentTimeMillis(),DateUtils.DATE_FORMAT_1);
+                String inputFIle = "sdcard/ff-input/NocturneNo2inEflat_44.1k_s16le.pcm";
+                String outputFIle = "sdcard/ff-input/output_16_8_"+ date +".pcm";
+                Log.i(TAG," inputFIle = " + inputFIle);
+                Log.i(TAG," outputFIle = " + outputFIle);
+                makePcm16ToPcm8(inputFIle,outputFIle);
             }
         });
 
@@ -97,7 +121,8 @@ public class TransPCMActivity extends AppCompatActivity {
                     ToastUtils.showShortToast(TransPCMActivity.this," file path is empty ");
                     return;
                 }
-
+                Intent intent = new Intent(TransPCMActivity.this, OpenSLActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -129,7 +154,7 @@ public class TransPCMActivity extends AppCompatActivity {
         }
     }
 
-    public native int devidePcmToLeftRight(String inputPcmPath,String outputLeftPcmPath,String outputRightPcmPath);
+    public native int dividePcmToLeftRight(String inputPcmPath,String outputLeftPcmPath,String outputRightPcmPath);
     public native int transPcmToAac(String inputFilePath,String outputFilePath);
     public native int makePcmVolumeHalf(String inputFilePath,String outputFilePath);
     public native int makePcmSpeedUp(String inputFilePath,String outputFilePath);

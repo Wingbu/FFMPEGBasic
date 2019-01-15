@@ -11,7 +11,7 @@ import java.util.Date;
 
 public class DateUtils {
 
-    public static final String DATE_FORMAT_1 = "yyyyMMddhhmmss";
+    public static final String DATE_FORMAT_1 = "yyyyMMdd_hhmmss";
 
     public static String getDate(long timeStamp , String format){
         Date now = new Date(timeStamp);

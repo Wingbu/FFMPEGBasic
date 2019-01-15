@@ -14,11 +14,21 @@ extern "C"{
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_example_wingbu_ffmpegbasic_trans_TransPCMActivity_devidePcmToLeftRight(JNIEnv *env, jclass type,
+Java_com_example_wingbu_ffmpegbasic_trans_TransPCMActivity_dividePcmToLeftRight(JNIEnv *env, jclass type,
                                                                             jstring inputPcmPath, jstring outputLeftPcmPath, jstring outputRightPcmPath) {
-    FILE *input = fopen("","rb+");
-    FILE *output_left = fopen("","wb+");
-    FILE *output_right = fopen("","wb+");
+
+    //获取输入输出文件名
+    const char *input_path = env->GetStringUTFChars(inputPcmPath, 0);
+    const char *output_left_path = env->GetStringUTFChars(outputLeftPcmPath, 0);
+    const char *output_right_path = env->GetStringUTFChars(outputRightPcmPath, 0);
+
+    FFLOGI("输入视频文件：%s",input_path);
+    FFLOGI("左声道输出视频文件：%s", output_left_path);
+    FFLOGI("右声道输出视频文件：%s",output_right_path);
+
+    FILE *input = fopen(input_path,"rb+");
+    FILE *output_left = fopen(output_left_path,"wb+");
+    FILE *output_right = fopen(output_right_path,"wb+");
 
     unsigned char *sample = (unsigned char*)malloc(4);
 
@@ -50,31 +60,39 @@ extern "C"
 JNIEXPORT jint JNICALL
 Java_com_example_wingbu_ffmpegbasic_trans_TransPCMActivity_makePcmVolumeHalf(JNIEnv *env, jclass type,
                                                                          jstring inputFilePath, jstring outputFilePath) {
-//    FILE *fp=fopen(url,"rb+");
-//    FILE *fp1=fopen("output_halfleft.pcm","wb+");
-//
-//    int cnt=0;
-//
-//    unsigned char *sample=(unsigned char *)malloc(4);
-//
-//    while(!feof(fp)){
-//        short *samplenum=NULL;
-//        fread(sample,1,4,fp);
-//
-//        samplenum=(short *)sample;
-//        *samplenum=*samplenum/2;
-//        //L
-//        fwrite(sample,1,2,fp1);
-//        //R
-//        fwrite(sample+2,1,2,fp1);
-//
-//        cnt++;
-//    }
-//    printf("Sample Cnt:%d\n",cnt);
-//
-//    free(sample);
-//    fclose(fp);
-//    fclose(fp1);
+
+    //获取输入输出文件名
+    const char *input_path = env->GetStringUTFChars(inputFilePath, 0);
+    const char *output_path = env->GetStringUTFChars(outputFilePath, 0);
+
+    FFLOGI("输入视频文件：%s",input_path);
+    FFLOGI("输出视频文件：%s", output_path);
+
+    FILE *fp=fopen(input_path,"rb+");
+    FILE *fp1=fopen(output_path,"wb+");
+
+    int cnt=0;
+
+    unsigned char *sample=(unsigned char *)malloc(4);
+
+    while(!feof(fp)){
+        short *samplenum=NULL;
+        fread(sample,1,4,fp);
+
+        samplenum=(short *)sample;
+        *samplenum=*samplenum/2;
+        //L
+        fwrite(sample,1,2,fp1);
+        //R
+        fwrite(sample+2,1,2,fp1);
+
+        cnt++;
+    }
+    printf("Sample Cnt:%d\n",cnt);
+
+    free(sample);
+    fclose(fp);
+    fclose(fp1);
     return 0;
 }
 
@@ -82,30 +100,38 @@ extern "C"
 JNIEXPORT jint JNICALL
 Java_com_example_wingbu_ffmpegbasic_trans_TransPCMActivity_makePcmSpeedUp(JNIEnv *env, jclass type,
                                                                          jstring inputFilePath, jstring outputFilePath) {
-//    FILE *fp=fopen(url,"rb+");
-//    FILE *fp1=fopen("output_doublespeed.pcm","wb+");
-//
-//    int cnt=0;
-//
-//    unsigned char *sample=(unsigned char *)malloc(4);
-//
-//    while(!feof(fp)){
-//
-//        fread(sample,1,4,fp);
-//
-//        if(cnt%2!=0){
-//            //L
-//            fwrite(sample,1,2,fp1);
-//            //R
-//            fwrite(sample+2,1,2,fp1);
-//        }
-//        cnt++;
-//    }
-//    printf("Sample Cnt:%d\n",cnt);
-//
-//    free(sample);
-//    fclose(fp);
-//    fclose(fp1);
+
+    //获取输入输出文件名
+    const char *input_path = env->GetStringUTFChars(inputFilePath, 0);
+    const char *output_path = env->GetStringUTFChars(outputFilePath, 0);
+
+    FFLOGI("输入视频文件：%s",input_path);
+    FFLOGI("输出视频文件：%s", output_path);
+
+    FILE *fp=fopen(input_path,"rb+");
+    FILE *fp1=fopen(output_path,"wb+");
+
+    int cnt=0;
+
+    unsigned char *sample=(unsigned char *)malloc(4);
+
+    while(!feof(fp)){
+
+        fread(sample,1,4,fp);
+
+        if(cnt%2!=0){
+            //L
+            fwrite(sample,1,2,fp1);
+            //R
+            fwrite(sample+2,1,2,fp1);
+        }
+        cnt++;
+    }
+    printf("Sample Cnt:%d\n",cnt);
+
+    free(sample);
+    fclose(fp);
+    fclose(fp1);
 
     return 0;
 }
@@ -114,39 +140,46 @@ extern "C"
 JNIEXPORT jint JNICALL
 Java_com_example_wingbu_ffmpegbasic_trans_TransPCMActivity_makePcm16ToPcm8(JNIEnv *env, jclass type,
                                                                           jstring inputFilePath, jstring outputFilePath) {
-//    FILE *fp=fopen(url,"rb+");
-//    FILE *fp1=fopen("output_8.pcm","wb+");
-//
-//    int cnt=0;
-//
-//    unsigned char *sample=(unsigned char *)malloc(4);
-//
-//    while(!feof(fp)){
-//
-//        short *samplenum16=NULL;
-//        char samplenum8=0;
-//        unsigned char samplenum8_u=0;
-//        fread(sample,1,4,fp);
-//        //(-32768-32767)
-//        samplenum16=(short *)sample;
-//        samplenum8=(*samplenum16)>>8;
-//        //(0-255)
-//        samplenum8_u=samplenum8+128;
-//        //L
-//        fwrite(&samplenum8_u,1,1,fp1);
-//
-//        samplenum16=(short *)(sample+2);
-//        samplenum8=(*samplenum16)>>8;
-//        samplenum8_u=samplenum8+128;
-//        //R
-//        fwrite(&samplenum8_u,1,1,fp1);
-//        cnt++;
-//    }
-//    printf("Sample Cnt:%d\n",cnt);
-//
-//    free(sample);
-//    fclose(fp);
-//    fclose(fp1);
+    //获取输入输出文件名
+    const char *input_path = env->GetStringUTFChars(inputFilePath, 0);
+    const char *output_path = env->GetStringUTFChars(outputFilePath, 0);
+
+    FFLOGI("输入视频文件：%s",input_path);
+    FFLOGI("输出视频文件：%s", output_path);
+
+    FILE *fp=fopen(input_path,"rb+");
+    FILE *fp1=fopen(output_path,"wb+");
+
+    int cnt=0;
+
+    unsigned char *sample=(unsigned char *)malloc(4);
+
+    while(!feof(fp)){
+
+        short *samplenum16=NULL;
+        char samplenum8=0;
+        unsigned char samplenum8_u=0;
+        fread(sample,1,4,fp);
+        //(-32768-32767)
+        samplenum16=(short *)sample;
+        samplenum8=(*samplenum16)>>8;
+        //(0-255)
+        samplenum8_u=samplenum8+128;
+        //L
+        fwrite(&samplenum8_u,1,1,fp1);
+
+        samplenum16=(short *)(sample+2);
+        samplenum8=(*samplenum16)>>8;
+        samplenum8_u=samplenum8+128;
+        //R
+        fwrite(&samplenum8_u,1,1,fp1);
+        cnt++;
+    }
+    printf("Sample Cnt:%d\n",cnt);
+
+    free(sample);
+    fclose(fp);
+    fclose(fp1);
     return 0;
 }
 
