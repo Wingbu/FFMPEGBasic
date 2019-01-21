@@ -110,7 +110,12 @@ public class TransPCMActivity extends AppCompatActivity {
         mBtnPcmToWav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                String date = DateUtils.getDate(System.currentTimeMillis(),DateUtils.DATE_FORMAT_1);
+                String inputFIle = "sdcard/ff-input/NocturneNo2inEflat_44.1k_s16le.pcm";
+                String outputFIle = "sdcard/ff-input/output_pcm_to_wav_"+ date +".wav";
+                Log.i(TAG," inputFIle = " + inputFIle);
+                Log.i(TAG," outputFIle = " + outputFIle);
+                transPcmToWave(inputFIle,2, 44100,outputFIle);
             }
         });
 
@@ -160,5 +165,5 @@ public class TransPCMActivity extends AppCompatActivity {
     public native int makePcmSpeedUp(String inputFilePath,String outputFilePath);
     public native int makePcm16ToPcm8(String inputFilePath,String outputFilePath);
     public native int cutPcm(String inputFilePath,String outputFilePath,int start_num,int dur_num);
-    public native int transPcmToWave(String inputFilePath,String outputFilePath);
+    public native int transPcmToWave(String inputFilePath,int channels,int sample_rate, String outputFilePath);
 }

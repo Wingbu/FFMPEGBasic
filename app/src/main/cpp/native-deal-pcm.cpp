@@ -223,25 +223,25 @@ JNIEXPORT jint JNICALL
 Java_com_example_wingbu_ffmpegbasic_trans_TransPCMActivity_transPcmToWave(JNIEnv *env, jclass type,
                                                                          jstring inputFilePath, jint channels,jint sample_rate, jstring outputFilePath ) {
     typedef struct WAVE_HEADER{
-        char         fccID[4];
-        unsigned   long    dwSize;
-        char         fccType[4];
+        char               fccID[4];    //文档标识：大写字符串"RIFF",标明该文件为有效的 RIFF 格式文档
+        unsigned   long    dwSize;      //文件数据长度：从下一个字段首地址开始到文件末尾的总字节数。该字段的数值加 8 为当前文件的实际长度。
+        char               fccType[4];  //文件格式类型：所有 WAV 格式的文件此处为字符串"WAVE",标明该文件是 WAV 格式文件。
     }WAVE_HEADER;
 
     typedef struct WAVE_FMT{
-        char         fccID[4];
-        unsigned   long       dwSize;
-        unsigned   short     wFormatTag;
-        unsigned   short     wChannels;
-        unsigned   long       dwSamplesPerSec;
-        unsigned   long       dwAvgBytesPerSec;
-        unsigned   short     wBlockAlign;
-        unsigned   short     uiBitsPerSample;
+        char                 fccID[4];          //格式块标识：小写字符串,"fmt "。注意帶上空格
+        unsigned   long      dwSize;            //格式块长度：其数值不确定,取决于编码格式。可以是 16、 18 、20、40 等，指的是本块剩余字节数
+        unsigned   short     wFormatTag;        //编码格式代码：常见的 WAV 文件使用 PCM 脉冲编码调制格式,该数值通常为 1。
+        unsigned   short     wChannels;         //声道个数：单声道为 1,立体声或双声道为 2
+        unsigned   long      dwSamplesPerSec;   //采样频率：每个声道单位时间采样次数。常用的采样频率有 11025, 22050 和 44100 kHz。
+        unsigned   long      dwAvgBytesPerSec;  //数据传输速率：该数值为 声道数×采样频率×每样本的数据位数/8。播放软件利用此值可以估计缓冲区的大小。
+        unsigned   short     wBlockAlign;       //数据块对齐单位：采样帧大小。该数值为:声道数×位数/8。播放软件需要一次处理多个该值大小的字节数据,用该数值调整缓冲区。
+        unsigned   short     uiBitsPerSample;   //采样位数：存储每个采样值所用的二进制数位数。常见的位数有 4、8、12、16、24、32
     }WAVE_FMT;
 
     typedef struct WAVE_DATA{
-        char       fccID[4];
-        unsigned long dwSize;
+        char          fccID[4];      //块标识，小写字符串,"fact"
+        unsigned long dwSize;        //块长度
     }WAVE_DATA;
 
     if(channels==0||sample_rate==0){
