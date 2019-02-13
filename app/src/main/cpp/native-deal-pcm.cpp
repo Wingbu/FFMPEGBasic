@@ -240,7 +240,7 @@ Java_com_example_wingbu_ffmpegbasic_trans_TransPCMActivity_transPcmToWave(JNIEnv
     }WAVE_FMT;
 
     typedef struct WAVE_DATA{
-        char          fccID[4];      //块标识，小写字符串,"fact"
+        char          fccID[4];      //块标识，小写字符串,"data"
         unsigned long dwSize;        //块长度
     }WAVE_DATA;
 
