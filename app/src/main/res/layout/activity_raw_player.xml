@@ -32,4 +32,10 @@
         android:id="@+id/btn_stop"
         android:text="stop"
         />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="300dp"
+        android:layout_marginLeft="12dp"
+        android:text="备注：使用MediaPlayer播放raw音频文件"/>
 </LinearLayout>

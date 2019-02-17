@@ -10,4 +10,11 @@
         android:id="@+id/surface_view"
         android:layout_width="300dp"
         android:layout_height="300dp" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/surface_view"
+        android:layout_marginTop="100dp"
+        android:layout_marginLeft="12dp"
+        android:text="备注：使用FFMPEG和SurfaceView播放手机本地视频文件（无音频）"/>
 </RelativeLayout>

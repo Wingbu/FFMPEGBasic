@@ -52,4 +52,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="pcm"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
+        android:layout_marginLeft="12dp"
+        android:text="备注：使用OpenSL播放音频，包括播放assets文件；播放uri文件；手机上的pcm音频文件（可在本页面选择文件）"/>
 </LinearLayout>

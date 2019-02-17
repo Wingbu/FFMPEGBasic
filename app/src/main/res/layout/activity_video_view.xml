@@ -62,6 +62,13 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_alignLeft="@+id/button_set"
-        android:layout_below="@+id/button_set" />
+        android:layout_below="@+id/tv_info" />
+    <TextView
+        android:id="@+id/tv_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button_set"
+        android:layout_marginLeft="12dp"
+        android:text="备注：使用VideoView播放手机本地视频文件"/>
 
 </RelativeLayout>
