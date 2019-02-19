@@ -1,5 +1,4 @@
 # FFMPEGBasic
-FFMPEG demo
 Android的音视频部分示例。
 
 主要包含的功能如下：
